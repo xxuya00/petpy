@@ -1,0 +1,314 @@
+/* Forever Garden (AR 소환) - Petpy core feature */
+
+.fg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(8, 6, 10, 0.92);
+    backdrop-filter: blur(6px);
+}
+
+.fg-overlay.open {
+    display: flex;
+}
+
+.fg-modal {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 460px;
+    background: #0c0a0e;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+@media (min-width: 520px) {
+    .fg-modal {
+        height: 92vh;
+        max-height: 900px;
+        border-radius: 24px;
+    }
+}
+
+.fg-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 40;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.45);
+    color: #fff;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+    transition: background 0.2s;
+}
+
+.fg-close:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/* Steps */
+.fg-step {
+    display: none;
+    flex: 1;
+    min-height: 0;
+}
+
+.fg-step.active {
+    display: flex;
+}
+
+/* Upload step */
+.fg-upload {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: auto;
+    text-align: center;
+    padding: 36px 26px;
+    gap: 16px;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(255, 142, 83, 0.16), transparent 60%),
+        radial-gradient(circle at 80% 100%, rgba(196, 113, 237, 0.14), transparent 55%),
+        #0c0a0e;
+}
+
+/* center the block when it fits, but allow full scroll when it overflows (small phones) */
+.fg-upload > :first-child { margin-top: auto; }
+.fg-upload > :last-child { margin-bottom: auto; }
+
+.fg-upload .fg-emoji {
+    font-size: 44px;
+}
+
+.fg-upload h2 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53 55%, #c471ed);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.fg-upload p {
+    color: #b9aeb8;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-top: -6px;
+}
+
+.fg-drop {
+    width: 100%;
+    border: 2px dashed rgba(255, 255, 255, 0.25);
+    border-radius: 20px;
+    padding: 36px 18px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    background: rgba(255, 255, 255, 0.03);
+    color: #d8cfd6;
+}
+
+.fg-drop:hover,
+.fg-drop.drag {
+    border-color: #ff8e53;
+    background: rgba(255, 142, 83, 0.08);
+    transform: translateY(-2px);
+}
+
+.fg-drop strong {
+    color: #fff;
+    font-weight: 700;
+}
+
+.fg-drop small {
+    display: block;
+    margin-top: 8px;
+    color: #8c8190;
+    font-size: 0.8rem;
+}
+
+.fg-name {
+    width: 100%;
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    font-size: 1rem;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.fg-name:focus {
+    border-color: #ff8e53;
+}
+
+.fg-name::placeholder {
+    color: #7d7280;
+}
+
+.fg-cta {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.fg-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(255, 107, 107, 0.35);
+}
+
+.fg-cta:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Scene step */
+.fg-scene {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    background: #000;
+}
+
+.fg-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: none;
+}
+
+.fg-video {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.fg-loading {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.fg-loading.hidden {
+    display: none;
+}
+
+.fg-spinner {
+    width: 42px;
+    height: 42px;
+    border: 3px solid rgba(255, 255, 255, 0.15);
+    border-top-color: #ff8e53;
+    border-radius: 50%;
+    animation: fg-spin 1s linear infinite;
+}
+
+@keyframes fg-spin {
+    to { transform: rotate(360deg); }
+}
+
+.fg-controls {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    padding: 22px 16px calc(20px + env(safe-area-inset-bottom));
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.2) 70%, transparent);
+}
+
+.fg-hint {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.82rem;
+    letter-spacing: 0.2px;
+}
+
+.fg-btnrow {
+    display: flex;
+    gap: 10px;
+}
+
+.fg-btn {
+    flex: 1;
+    padding: 14px 10px;
+    border-radius: 50px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.fg-btn-primary {
+    border: none;
+    color: #fff;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+}
+
+.fg-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(255, 107, 107, 0.35);
+}
+
+.fg-btn-ghost {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    backdrop-filter: blur(6px);
+}
+
+.fg-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.fg-feedback {
+    text-align: center;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.fg-feedback:hover {
+    color: #ff8e53;
+}

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta property="og:title" content="펫피 (Petpy) 🐾">
+    <meta property="og:description" content="내 새꾸를 온 세상에">
+    <meta property="og:image" content="https://69ef21f2ffaa361f72647836--keen-lebkuchen-e984bd.netlify.app/images/templatemo-amber-folio-05.jpg">
+    <meta property="og:url" content="https://69ef21f2ffaa361f72647836--keen-lebkuchen-e984bd.netlify.app">
+    <!--추가 코드-->
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
+
+    <title>펫피 (Petpy) - 내 새꾸를 온 세상에</title>
+    <link rel="stylesheet" href="templatemo-amber-folio.css">
+    <link rel="stylesheet" href="forever-garden.css">
+    <link rel="stylesheet" href="petpy-feed.css">
+<!--
+
+TemplateMo 615 Amber Folio
+
+https://templatemo.com/tm-615-amber-folio
+
+-->
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Header Navigation -->
+    <header id="header">
+        <nav>
+            <a href="#home" class="logo">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.5 14.5C6 14.5 4 16.5 4 19s2 4.5 4.5 4.5S13 21.5 13 19s-2-4.5-4.5-4.5zm7 0c-2.5 0-4.5 2-4.5 4.5s2 4.5 4.5 4.5S20 21.5 20 19s-2-4.5-4.5-4.5zM6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3S7.66 9 6 9zm12 0c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zM12 2C9.79 2 8 3.79 8 6s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"/>
+                </svg>
+                Pet Pride
+            </a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#portfolio">Feed</a></li>
+                <!-- <li><a href="#about">About</a></li> -->
+                <li><a href="#services">Services</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="menu-toggle" id="menuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
+        <div class="hero-bg"></div>
+        <div class="hero-shapes">
+            <div class="floating-accent accent-1"></div>
+            <div class="floating-accent accent-2"></div>
+            <div class="floating-accent accent-3"></div>
+        </div>
+        <div class="hero-content reveal">
+            <h1 class="hero-title">PETPY</h1>
+            <p class="hero-subtitle">귀엽고 사랑스러운 내 새꾸, 온 세상이 알게 하자🐾</p>
+        
+        <!-- 펫피 페이크도어 CTA -->
+        <div style="text-align:center; margin-top: 48px;">
+            <p style="color:#aaa; margin-bottom: 24px; font-size: 1rem;">지금 바로 체험해보세요</p>
+            <button onclick="handleAR()" style="
+                background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+                color: #fff; border: none; padding: 16px 40px;
+                border-radius: 50px; font-size: 1.1rem; font-weight: 700;
+                cursor: pointer; margin: 8px; transition: transform 0.2s;">
+                ✨ AR 체험하기
+            </button>
+            <button onclick="handleUpload()" style="
+                background: #fff; color: #111; border: none;
+                padding: 16px 40px; border-radius: 50px;
+                font-size: 1.1rem; font-weight: 700;
+                cursor: pointer; margin: 8px; transition: transform 0.2s;">
+                📸 사진 업로드
+            </button>
+        </div>
+
+        
+        
+        </div>
+
+         
+    </section>
+
+    <!-- Portfolio Section with Coverflow -->
+    <section class="portfolio-section" id="portfolio">
+        <div class="section-header reveal">
+            <h2 class="section-title">지금 핫한 펫피</h2>
+            <p class="section-subtitle">Meet this week's most loved pets on Petp<br>Send to likes❤️</p>
+        </div>
+
+        <div class="coverflow-wrapper">
+            <div class="coverflow-container" id="coverflowContainer">
+
+                <!-- Black & White Photography -->
+                <div class="coverflow-item" data-index="6">
+                    <img src="images/templatemo-amber-folio-07.jpg" alt="Black and White Photography" class="portfolio-image" loading="lazy">
+                    <div class="portfolio-overlay">
+                        <div class="portfolio-category">@pawsome.kr</div>
+                        <h3 class="portfolio-title">두부</h3>
+                        <p class="portfolio-description">하얗고 말랑한 우리 집 애교쟁이</p>
+                        <button class="heart-btn" data-pet="두부" onclick="handleHeart(this)">🤍 <span class="heart-count">0</span></button>
+                    </div>
+                </div>
+                
+                <!-- Landscape Photography -->
+                <div class="coverflow-item" data-index="1">
+                    <img src="images/templatemo-amber-folio-02.jpg" alt="Landscape Photography" class="portfolio-image" loading="lazy">
+                    <div class="portfolio-overlay">
+                        <div class="portfolio-category">@mintchoco99</div>
+                        <h3 class="portfolio-title">챠미</h3>
+                        <p class="portfolio-description">츄르만 보면 눈이 하트가 되는 먹보 냥이</p>
+                        <button class="heart-btn" data-pet="챠미" onclick="handleHeart(this)">🤍 <span class="heart-count">0</span></button>
+                    </div>
+                </div>
+
+                <!-- Street Photography -->
+                <div class="coverflow-item" data-index="2">
+                    <img src="images/templatemo-amber-folio-03.jpg" alt="Street Photography" class="portfolio-image" loading="lazy">
+                    <div class="portfolio-overlay">
+                        <div class="portfolio-category">@ssol_jin</div>
+                        <h3 class="portfolio-title">보리</h3>
+                        <p class="portfolio-description">주인 닮아 예민하지만 볼수록 매력덩이(이것도 주인닮음)</p>
+                        <button class="heart-btn" data-pet="보리" onclick="handleHeart(this)">🤍 <span class="heart-count">0</span></button>
+                    </div>
+                </div>
+
+                <!-- Architecture Photography -->
+                <div class="coverflow-item" data-index="3">
+                    <img src="images/templatemo-amber-folio-04.jpg" alt="Architecture Photography" class="portfolio-image" loading="lazy">
+                    <div class="portfolio-overlay">
+                        <div class="portfolio-category">@fluffy.zip</div>
+                        <h3 class="portfolio-title">옥순</h3>
+                        <p class="portfolio-description">집에서 제일 높은 곳만 골라 앉는 냥이계 CEO</p>
+                        <button class="heart-btn" data-pet="옥순" onclick="handleHeart(this)">🤍 <span class="heart-count">0</span></button>
+                    </div>
+                </div>
+
+                <!-- Fashion Photography -->
+                <div class="coverflow-item" data-index="4">
+                    <img src="images/templatemo-amber-folio-05.jpg" alt="Fashion Photography" class="portfolio-image" loading="lazy">
+                    <div class="portfolio-overlay">
+                        <div class="portfolio-category">@nyang_detective</div>
+                        <h3 class="portfolio-title">쁘미</h3>
+                        <p class="portfolio-description">공을 너무너무 좋아하는 에너자이저</p>
+                        <button class="heart-btn" data-pet="쁘미" onclick="handleHeart(this)">🤍 <span class="heart-count">0</span></button>
+                    </div>
+                </div>
+
+                <!-- Wildlife Photography -->
+                <div class="coverflow-item" data-index="5">
+                    <img src="images/templatemo-amber-folio-06.jpg" alt="Wildlife Photography" class="portfolio-image" loading="lazy">
+                    <div class="portfolio-overlay">
+                        <div class="portfolio-category">@bbobbi_mom</div>
+                        <h3 class="portfolio-title">머랭</h3>
+                        <p class="portfolio-description">털이 너무 복슬복슬해서 만지면 손이 안 떨어짐</p>
+                        <button class="heart-btn" data-pet="머랭" onclick="handleHeart(this)">🤍 <span class="heart-count">0</span></button>
+                    </div>
+                </div>
+
+                <!-- Portrait Photography -->
+                <div class="coverflow-item" data-index="0">
+                    <img src="images/templatemo-amber-folio-01.jpg" alt="Portrait Photography" class="portfolio-image" loading="lazy">
+                    <div class="portfolio-overlay">
+                        <div class="portfolio-category">@haeppycloud</div>
+                        <h3 class="portfolio-title">야미</h3>
+                        <p class="portfolio-description">도도한 척하지만 무릎은 절대 안 떠나는 츤데레</p>
+                        <button class="heart-btn" data-pet="야미" onclick="handleHeart(this)">🤍 <span class="heart-count">0</span></button>
+                    </div>
+                </div>
+
+                <!-- Event Photography -->
+                <div class="coverflow-item" data-index="7">
+                    <img src="images/templatemo-amber-folio-08.jpg" alt="Event Photography" class="portfolio-image" loading="lazy">
+                    <div class="portfolio-overlay">
+                        <div class="portfolio-category">@donuthole__</div>
+                        <h3 class="portfolio-title">밤톨</h3>
+                        <p class="portfolio-description">밤톨같은 눈망울로 간식 달라고 영혼으로 애원하는 중</p>
+                        <button class="heart-btn" data-pet="밤톨" onclick="handleHeart(this)">🤍 <span class="heart-count">0</span></button>
+                    </div>
+                </div>
+
+                <!-- Abstract Photography -->
+                <div class="coverflow-item" data-index="8">
+                    <img src="images/templatemo-amber-folio-09.jpg" alt="Abstract Photography" class="portfolio-image" loading="lazy">
+                    <div class="portfolio-overlay">
+                        <div class="portfolio-category">@jellybeans</div>
+                        <h3 class="portfolio-title">햅쌀</h3>
+                        <p class="portfolio-description">작고 귀엽고 착한 햄스터 계의 인플루언서</p>
+                        <button class="heart-btn" data-pet="햅쌀" onclick="handleHeart(this)">🤍 <span class="heart-count">0</span></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="coverflow-controls">
+                <button class="control-btn" id="prevBtn">‹</button>
+                <button class="control-btn" id="playPauseBtn">▶</button>
+                <button class="control-btn" id="nextBtn">›</button>
+            </div>
+
+            <!-- Indicators -->
+            <div class="indicators" id="indicators">
+                <div class="indicator active" data-index="0"></div>
+                <div class="indicator" data-index="1"></div>
+                <div class="indicator" data-index="2"></div>
+                <div class="indicator" data-index="3"></div>
+                <div class="indicator" data-index="4"></div>
+                <div class="indicator" data-index="5"></div>
+                <div class="indicator" data-index="6"></div>
+                <div class="indicator" data-index="7"></div>
+                <div class="indicator" data-index="8"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <!-- <section class="about-section" id="about">
+        <div class="about-container reveal">
+            <div class="about-image">
+                <img src="images/templatemo-about-artist.jpg" alt="Photographer">
+            </div>
+            <div class="about-content">
+                <h2>About the Artist</h2>
+                <p>With over a decade of experience in professional photography, I specialize in capturing the extraordinary in everyday moments. My journey began with a simple camera and an insatiable curiosity about the world around me.</p>
+                <p>From the bustling streets of urban landscapes to the serene beauty of nature, I strive to tell stories through my lens. Each photograph is a carefully crafted piece of art, designed to evoke emotion and preserve memories that last a lifetime.</p>
+                <p>My work has been featured in numerous galleries and publications worldwide, but my greatest satisfaction comes from creating images that resonate with people on a personal level.</p>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">Projects</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">10+</div>
+                        <div class="stat-label">Years</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">Awards</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Services Section -->
+    <section class="services-section" id="services">
+        <div class="services-container">
+            <div class="section-header reveal">
+                <h2 class="section-title">펫피가 특별한 이유</h2>
+                <p class="section-subtitle">오직 동물만🐾, 오직 사랑만💕</p>
+            </div>
+
+            <div class="services-grid reveal">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-title">Pet Feed</h3>
+                    <p class="service-description">동물 사진과 영상만 올라오는 클린한 피드. <br>지인 눈치 없이 우리 아이를 마음껏 자랑하세요.</p>
+                    <p class="service-price">Clean feed, animals only</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-title">Hall of Fame</h3>
+                    <p class="service-description">매주 투표로 이달의 스타 선정! <br>간식·굿즈 지원금과 랜선집사 구독자 보상 시스템을 제공해요.</p>
+                    <p class="service-price">Vote · Win · Celebrate</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-title"> Forever Garden</h3>
+                    <p class="service-description">보고싶은 내 새꾸 <br>AR로 우리 집 거실에 다시 소환할 수 있어요.</p>
+                    <p class="service-price">Remember them, forever, whenever</p>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                        </svg>
+                    </div>
+                    <h3 class="service-title">Pet Lovers Community</h3>
+                    <p class="service-description">동물을 사랑하는 사람들이 모이는 공간. <br>반려동물 없이도 귀여운 동물 콘텐츠를 실컷 즐길 수 있어요.</p>
+                    <p class="service-price">No pet? No problem</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Community Feed (실제 피드) -->
+    <section class="community-section" id="community">
+        <div class="section-header reveal">
+            <h2 class="section-title">우리 아이 자랑 피드</h2>
+            <p class="section-subtitle">사진 한 장이면 끝! 우리 아이를 피드에 올려보세요 🐾</p>
+        </div>
+        <div class="community-cta-wrap reveal">
+            <button class="community-cta" onclick="handleUpload()">📸 내 새꾸 자랑하기</button>
+        </div>
+        <div class="community-grid" id="communityGrid"></div>
+    </section>
+
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+        <div class="contact-container">
+            <div class="section-header reveal">
+                <h2 class="section-title">함께 만들어가요</h2>
+                <p class="section-subtitle">Let's create something beautiful together</p>
+            </div>
+
+            <div class="contact-info reveal">
+                <a href="mailto:pbw0511@yonsei.ac.kr" class="contact-item">
+                    <div class="contact-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4ZM20 8L12 13L4 8V6L12 11L20 6V8Z"/>
+                        </svg>
+                    </div>
+                    <div class="contact-label">Email</div>
+                    <div class="contact-value">pbw0511@yonsei.ac.kr</div>
+                </a>
+
+                <a href="tel:+1234567890" class="contact-item">
+                    <div class="contact-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6.62 10.79C8.06 13.62 10.38 15.94 13.21 17.38L15.41 15.18C15.69 14.9 16.08 14.82 16.43 14.93C17.55 15.3 18.75 15.5 20 15.5C20.55 15.5 21 15.95 21 16.5V20C21 20.55 20.55 21 20 21C10.61 21 3 13.39 3 4C3 3.45 3.45 3 4 3H7.5C8.05 3 8.5 3.45 8.5 4C8.5 5.25 8.7 6.45 9.07 7.57C9.18 7.92 9.1 8.31 8.82 8.59L6.62 10.79Z"/>
+                        </svg>
+                    </div>
+                    <div class="contact-label">Phone</div>
+                    <div class="contact-value">+1 (234) 567-890</div>
+                </a>
+
+                <a href="https://maps.google.com/?q=Yonsei+University+Seoul" target="_blank" rel="noopener" class="contact-item">
+                    <div class="contact-icon">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22S19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9S10.62 6.5 12 6.5S14.5 7.62 14.5 9S13.38 11.5 12 11.5Z"/>
+                        </svg>
+                    </div>
+                    <div class="contact-label">Studio</div>
+                    <div class="contact-value">Seoul, Yonsei Univ</div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 토스트 -->
+        <div id="petpy-toast" style="
+            position:fixed; bottom:32px; left:50%; transform:translateX(-50%) translateY(80px);
+            background:#222; color:#fff; padding:14px 28px; border-radius:50px;
+            font-size:0.95rem; border:1px solid #444; z-index:9999;
+            transition:transform 0.4s, opacity 0.3s; opacity:0; white-space:nowrap;">
+        </div>
+
+
+    <!-- Forever Garden (AR 소환) -->
+    <div class="fg-overlay" id="fgOverlay" aria-hidden="true">
+        <div class="fg-modal">
+            <button class="fg-close" id="fgClose" aria-label="닫기">&times;</button>
+
+            <!-- Step 1: 업로드 -->
+            <div class="fg-step fg-upload active" id="fgStepUpload">
+                <div class="fg-emoji">🌈</div>
+                <h2>Forever Garden</h2>
+                <p>보고 싶은 우리 아이의 사진을 올리면<br>지금 이 공간으로 다시 소환해 드려요.</p>
+                <div class="fg-drop" id="fgDrop">
+                    <strong>탭하여 사진 선택</strong>
+                    <small>또는 사진을 여기로 끌어다 놓기</small>
+                </div>
+                <input type="file" id="fgFile" accept="image/*" hidden>
+                <input type="text" class="fg-name" id="fgName" placeholder="아이 이름 (선택)" maxlength="20">
+                <button class="fg-cta" id="fgStart" disabled>우리 집에 소환하기 ✨</button>
+            </div>
+
+            <!-- Step 2: 소환 씬 -->
+            <div class="fg-step fg-scene" id="fgStepScene">
+                <video class="fg-video" id="fgVideo" playsinline muted></video>
+                <canvas class="fg-canvas" id="fgCanvas"></canvas>
+                <div class="fg-loading" id="fgLoading">
+                    <div class="fg-spinner"></div>
+                    <span>거실을 비추는 중…</span>
+                </div>
+                <div class="fg-controls">
+                    <div class="fg-hint" id="fgHint">끌어서 위치 이동 · 손가락 모으기/벌리기로 크기 조절</div>
+                    <div class="fg-btnrow">
+                        <button class="fg-btn fg-btn-primary" id="fgSave">📸 저장</button>
+                        <button class="fg-btn fg-btn-primary" id="fgShare">💌 공유</button>
+                        <button class="fg-btn fg-btn-ghost" id="fgRetry">↺ 다시</button>
+                    </div>
+                    <a class="fg-feedback" id="fgFeedback" href="#" target="_blank" rel="noopener">이 기능 어땠어요? 피드백 남기기 →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 사진 업로드 (실제 피드) -->
+    <div class="fg-overlay" id="upOverlay" aria-hidden="true">
+        <div class="fg-modal">
+            <button class="fg-close" id="upClose" aria-label="닫기">&times;</button>
+            <div class="fg-step fg-upload active">
+                <div class="fg-emoji">🐾</div>
+                <h2>우리 아이 자랑하기</h2>
+                <p>사진과 이름을 올리면<br>바로 피드에 카드가 만들어져요.</p>
+                <div class="fg-drop" id="upDrop">
+                    <strong>탭하여 사진 선택</strong>
+                    <small>또는 사진을 여기로 끌어다 놓기</small>
+                </div>
+                <input type="file" id="upFile" accept="image/*" hidden>
+                <input type="text" class="fg-name" id="upName" placeholder="아이 이름 *" maxlength="20">
+                <input type="text" class="fg-name" id="upHandle" placeholder="인스타 핸들 (선택) 예: @petpy" maxlength="24">
+                <input type="text" class="fg-name" id="upDesc" placeholder="한 줄 소개 (선택)" maxlength="60">
+                <button class="fg-cta" id="upSubmit" disabled>피드에 올리기 ✨</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="https://instagram.com" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.8 2H16.2C19.4 2 22 4.6 22 7.8V16.2C22 19.4 19.4 22 16.2 22H7.8C4.6 22 2 19.4 2 16.2V7.8C2 4.6 4.6 2 7.8 2M7.6 4C5.61 4 4 5.61 4 7.6V16.4C4 18.39 5.61 20 7.6 20H16.4C18.39 20 20 18.39 20 16.4V7.6C20 5.61 18.39 4 16.4 4H7.6M17.25 5.5C17.94 5.5 18.5 6.06 18.5 6.75S17.94 8 17.25 8S16 7.44 16 6.75S16.56 5.5 17.25 5.5M12 7C14.76 7 17 9.24 17 12S14.76 17 12 17S7 14.76 7 12S9.24 7 12 7M12 9C10.34 9 9 10.34 9 12S10.34 15 12 15S15 13.66 15 12S13.66 9 12 9Z"/>
+                    </svg>
+                </a>
+                <a href="https://facebook.com/templatemo" target="_blank" rel="noopener" class="social-link" aria-label="Facebook">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96C18.34 21.21 22 17.06 22 12.06C22 6.53 17.5 2.04 12 2.04Z"/>
+                    </svg>
+                </a>
+                <a href="https://x.com/minthu" target="_blank" rel="noopener" class="social-link" aria-label="Twitter">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.46 6C21.69 6.35 20.86 6.58 20 6.69C20.88 6.16 21.56 5.32 21.88 4.31C21.05 4.81 20.13 5.16 19.16 5.36C18.37 4.5 17.26 4 16 4C13.65 4 11.73 5.92 11.73 8.29C11.73 8.63 11.77 8.96 11.84 9.27C8.28 9.09 5.11 7.38 3 4.79C2.63 5.42 2.42 6.16 2.42 6.94C2.42 8.43 3.17 9.75 4.33 10.5C3.62 10.5 2.96 10.3 2.38 10V10.03C2.38 12.11 3.86 13.85 5.82 14.24C5.46 14.34 5.08 14.39 4.69 14.39C4.42 14.39 4.15 14.36 3.89 14.31C4.43 16 6 17.26 7.89 17.29C6.43 18.45 4.58 19.13 2.56 19.13C2.22 19.13 1.88 19.11 1.54 19.07C3.44 20.29 5.74 21 8.23 21C16 21 20.33 14.46 20.33 8.79C20.33 8.6 20.33 8.42 20.32 8.23C21.16 7.63 21.88 6.87 22.46 6Z"/>
+                    </svg>
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener" class="social-link" aria-label="LinkedIn">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 3C19.55 3 20.05 3.21 20.41 3.59C20.79 3.95 21 4.45 21 5V19C21 19.55 20.79 20.05 20.41 20.41C20.05 20.79 19.55 21 19 21H5C4.45 21 3.95 20.79 3.59 20.41C3.21 20.05 3 19.55 3 19V5C3 4.45 3.21 3.95 3.59 3.59C3.95 3.21 4.45 3 5 3H19M18.5 18.5V13.2C18.5 11.87 17.45 10.82 16.12 10.82C15.21 10.82 14.46 11.37 14.17 12.15V11H11.5V18.5H14.17V13.57C14.17 12.82 14.79 12.2 15.54 12.2C16.29 12.2 16.91 12.82 16.91 13.57V18.5H18.5M6.88 9.57C7.63 9.57 8.25 8.96 8.25 8.21C8.25 7.46 7.63 6.84 6.88 6.84C6.13 6.84 5.5 7.46 5.5 8.21C5.5 8.96 6.13 9.57 6.88 9.57M8.21 18.5V11H5.5V18.5H8.21Z"/>
+                    </svg>
+                </a>
+            </div>
+            <p class="footer-text">
+                © 2026 Pet Pride. All rights reserved.<br> Made with 🐾 for pet lovers everywhere
+            </p>
+        </div>
+    </footer>
+    <script src="templatemo-amber-script.js"></script>
+    <script src="forever-garden.js"></script>
+    <script src="petpy-feed.js"></script>
+
+    
+    <!--추가 스크립트 -->
+    <script type="application/javascript">
+					var ip = "null";
+					function getIP(json) {
+					    console.log(json);
+					    try {
+							ip = json.ip;
+					    } catch (e) {
+							ip = 'unknown';
+					    }
+					    return;
+					}
+
+          
+	</script>
+	<script type="application/javascript" src="https://jsonip.com?format=jsonp&callback=getIP"></script>
+    
+    
+
+    <script>
+      //device
+      var mobile = 'desktop';
+				if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+					// true for mobile device
+					mobile = 'mobile';
+				}
+			
+
+      //UTM
+      var queryString = location.search;
+				const urlParams = new URLSearchParams(queryString);
+				const utm = urlParams.get("utm")
+			
+
+      // Sam pading value to start with 0. eg: 01, 02, .. 09, 10, ..
+				function padValue(value) {
+					return (value < 10) ? "0" + value : value;
+				}
+
+				function getTimeStamp() {
+					const date = new Date();
+
+					const year = date.getFullYear();
+					const month = date.getMonth() + 1;
+					const day = date.getDate();
+					const hours = date.getHours();
+					const minutes = date.getMinutes();
+					const seconds = date.getSeconds();
+
+					const formattedDate = `${padValue(year)}-${padValue(month)}-${padValue(day)} ${padValue(hours)}:${padValue(minutes)}:${padValue(seconds)}`;
+
+					return formattedDate;
+				}
+
+      // 쿠키에서 값을 가져오는 함수
+				function getCookieValue(name) {
+					const value = "; " + document.cookie;
+					const parts = value.split("; " + name + "=");
+					if (parts.length === 2) {
+						return parts.pop().split(";").shift();
+					}
+				}
+
+				// 쿠키에 값을 저장하는 함수
+				function setCookieValue(name, value, days) {
+					let expires = "";
+					if (days) {
+						const date = new Date();
+						date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+						expires = "; expires=" + date.toUTCString();
+					}
+					document.cookie = name + "=" + (value || "") + expires + "; path=/";
+				}
+
+				function getUVfromCookie() {
+					// 6자리 임의의 문자열 생성
+					const hash = Math.random().toString(36).substring(2, 8).toUpperCase();
+					// 쿠키에서 기존 해시 값을 가져옴
+					const existingHash = getCookieValue("user");
+					// 기존 해시 값이 없으면, 새로운 해시 값을 쿠키에 저장
+					if (!existingHash) {
+						setCookieValue("user", hash, 180); // 쿠키 만료일은 6개월 
+						return hash;
+					} else {
+						// 기존 해시 값이 있으면, 기존 값을 반환
+						return existingHash;
+					}
+				}
+
+				/* 수정 payload data -> id:getUVfromCookie() */
+			
+
+      /* data를 만들 땐 모든 field가 들어 있어야 함 */
+      var data = JSON.stringify(
+					{"id": getUVfromCookie(),
+							"landingUrl":window.location.href, 
+							"ip":ip, 
+							"referer":document.referrer,
+							"time_stamp":getTimeStamp(), 
+							"utm":utm,
+							"device":mobile}
+				);
+      
+      var addrScript = "https://script.google.com/macros/s/AKfycbwpbJBX2bYhxGyc1qTOorLfHXoid3i2eAb-jepvzIlHRf1AC6JISAfxscWOHfhkSLIPsg/exec"
+      $(document).ready(function () {
+
+					console.log("Document Ready");
+
+					/* axios request */
+          axios.get(addrScript+'?action=insert&table=visitors&data='+data)
+				    .then(response => {
+							console.log(JSON.stringify(response));
+						})
+						.catch(error => {
+							if (error.response) {
+								// 서버가 2xx 범위를 벗어난 상태 코드로 응답한 경우
+								console.log(error.response.data);
+								console.log(error.response.status);
+								console.log(error.response.headers);
+							} else if (error.request) {
+								// 요청이 전송되었지만 응답을 받지 못한 경우
+								console.log(error.request);
+							} else {
+								// 요청 설정 중에 오류가 발생한 경우
+								console.log('Error', error.message);
+							}
+							console.log(error.config);
+						});
+
+				});
+              
+    </script>
+    
+    
+    <!--xyz가설검증-->
+    <script>
+        var FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdpth4adzbjthJgtQ_CMLkKkiI6cRmXGkeDrrT93NYBr-ZaWQ/viewform?usp=dialog";  // ← 여기만 바꾸면 됨
+
+        function showToast(msg) {
+            var t = document.getElementById('petpy-toast');
+            if (!t) return;
+            t.textContent = msg;
+            t.style.transform = 'translateX(-50%) translateY(0)';
+            t.style.opacity = '1';
+            setTimeout(function() {
+                t.style.transform = 'translateX(-50%) translateY(80px)';
+                t.style.opacity = '0';
+            }, 3000);
+        }
+
+        function handleAR() {
+            trackClick("AR");
+            if (window.openForeverGarden) {
+                window.openForeverGarden();
+            } else {
+                showToast("🌈 AR 가든 체험 신청됐어요! 잠깐만요...");
+                setTimeout(function() { window.open(FORM_URL, "_blank"); }, 1000);
+            }
+        }
+
+        function handleUpload() {
+            trackClick("UPLOAD");
+            if (window.openUpload) {
+                window.openUpload();
+            } else {
+                showToast("📸 사전등록하면 먼저 알려드려요!");
+                setTimeout(function() { window.open(FORM_URL, "_blank"); }, 1000);
+            }
+        }
+
+        function trackClick(buttonName) {
+            var clickData = JSON.stringify({
+                "id": getUVfromCookie(),
+                "landingUrl": window.location.href,
+                "ip": ip,
+                "referer": document.referrer,
+                "time_stamp": getTimeStamp(),
+                "utm": (utm || "direct") + "__click_" + buttonName,
+                "device": mobile
+            });
+            axios.get(addrScript + '?action=insert&table=visitors&data=' + clickData)
+                .catch(function(e) { console.log("click log err", e); });
+        }
+    </script>
+    
+    <!-- likes -->
+    <script>
+    // showToast()는 위 스크립트에서 전역 정의됨
+
+    function getLikedPets() {
+        var val = getCookieValue('liked_pets');
+        if (!val || val === 'undefined') return [];
+        return val.split(',').filter(function(x) { return x !== ''; });
+    }
+
+    function loadHeartCounts() {
+        axios.get(addrScript + '?action=read&table=likes')
+            .then(function(res) {
+                var rows = res.data.data;
+                if (!Array.isArray(rows)) return;
+
+                // 하트 수 집계
+                var counts = {};
+                rows.forEach(function(row) {
+                    if (!row.pet_name) return;
+                    counts[row.pet_name] = (counts[row.pet_name] || 0) + 1;
+                });
+
+                var liked = getLikedPets();
+
+                document.querySelectorAll('.heart-btn').forEach(function(btn) {
+                    var pet = btn.dataset.pet;
+                    var count = counts[pet] || 0;
+                    var isLiked = liked.includes(pet);
+
+                    btn.dataset.pet = pet;
+                    btn.innerHTML = (isLiked ? '❤️' : '🤍') + ' <span class="heart-count">' + count + '</span>';
+                    if (isLiked) btn.classList.add('liked');
+                });
+            })
+            .catch(function(e) { console.log('heart load err', e); });
+    }
+
+    function handleHeart(btn) {
+        var petName = btn.dataset.pet;
+        if (!petName) return;
+
+        var liked = getLikedPets();
+        if (liked.includes(petName)) {
+            showToast('이미 하트를 눌렀어요 💕');
+            return;
+        }
+
+        // 쿠키 저장
+        liked.push(petName);
+        setCookieValue('liked_pets', liked.join(','), 180);
+
+        // UI 업데이트
+        var countEl = btn.querySelector('.heart-count');
+        var current = parseInt(countEl ? countEl.textContent : '0') || 0;
+        btn.innerHTML = '❤️ <span class="heart-count">' + (current + 1) + '</span>';
+        btn.classList.add('liked');
+        btn.dataset.pet = petName; // innerHTML 교체 후 dataset 복구
+
+        // 시트 기록
+        var likeData = JSON.stringify({
+            "id": getUVfromCookie(),
+            "pet_name": petName,
+            "time_stamp": getTimeStamp(),
+            "device": mobile
+        });
+        axios.get(addrScript + '?action=insert&table=likes&data=' + likeData)
+            .catch(function(e) { console.log('heart log err', e); });
+
+        showToast('❤️ ' + petName + '에게 하트를 보냈어요!');
+    }
+
+    $(document).ready(function() {
+        loadHeartCounts();
+    });
+</script>
+
+</body>
+</html>
