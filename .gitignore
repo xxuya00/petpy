@@ -1,2 +1,8 @@
 .DS_Store
 .claude/
+
+# backend
+node_modules/
+server/node_modules/
+.env
+server/.env

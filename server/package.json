@@ -1,0 +1,26 @@
+{
+  "name": "petpy-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Petpy separate backend — Replicate image-to-video, AWS Rekognition animal moderation, S3/DynamoDB shared feed.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1064.0",
+    "@aws-sdk/client-rekognition": "^3.1064.0",
+    "@aws-sdk/client-s3": "^3.1064.0",
+    "@aws-sdk/lib-dynamodb": "^3.1064.0",
+    "@aws-sdk/s3-request-presigner": "^3.1064.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "replicate": "^1.4.0"
+  }
+}

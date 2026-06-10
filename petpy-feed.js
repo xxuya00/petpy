@@ -30,6 +30,11 @@
     }
     function toast(msg) { try { if (window.showToast) window.showToast(msg); } catch (e) {} }
     function track(name) { try { if (window.trackClick) window.trackClick(name); } catch (e) {} }
+    function api() { return (window.PETPY_API || "").replace(/\/+$/, ""); }
+    function scrollToFeed() {
+        var sec = document.getElementById("community");
+        if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
 
     function fileToDataUrl(file, maxSize, quality) {
         return new Promise(function (resolve, reject) {
@@ -65,15 +70,32 @@
         '</div>';
     }
 
-    function renderGrid() {
-        if (!grid) return;
+    function emptyHtml() {
+        return '<div class="community-empty">아직 올라온 사진이 없어요.<br>우리 아이를 가장 먼저 자랑해 보세요! 🐾</div>';
+    }
+
+    function renderLocal() {
         var posts = loadPosts();
-        if (posts.length === 0) {
-            grid.innerHTML = '<div class="community-empty">아직 올라온 사진이 없어요.<br>우리 아이를 가장 먼저 자랑해 보세요! 🐾</div>';
-            return;
-        }
+        if (posts.length === 0) { grid.innerHTML = emptyHtml(); return; }
         grid.innerHTML = posts.map(cardHtml).join("");
         syncHearts();
+    }
+
+    // 백엔드가 설정돼 있으면 공유 피드를 불러오고, 실패하면 로컬로 폴백
+    function renderGrid() {
+        if (!grid) return;
+        var base = api();
+        if (!base) { renderLocal(); return; }
+        grid.innerHTML = '<div class="community-empty">불러오는 중… 🐾</div>';
+        fetch(base + "/api/posts")
+            .then(function (r) { if (!r.ok) throw new Error("bad status"); return r.json(); })
+            .then(function (data) {
+                var posts = (data && data.posts) || [];
+                if (!posts.length) { grid.innerHTML = emptyHtml(); return; }
+                grid.innerHTML = posts.map(cardHtml).join("");
+                syncHearts();
+            })
+            .catch(function () { renderLocal(); });
     }
 
     function prependCard(post) {
@@ -114,18 +136,14 @@
         }).catch(function () { toast("사진을 불러오지 못했어요"); });
     }
 
-    function submitPost() {
-        var name = (nameInput.value || "").trim();
-        if (!pendingImg) { toast("사진을 먼저 선택해 주세요"); return; }
-        if (!name) { toast("아이 이름을 입력해 주세요 🐾"); nameInput.focus(); return; }
-        var handle = (handleInput.value || "").trim();
-        if (handle && handle[0] !== "@") handle = "@" + handle;
+    // 백엔드 없이/실패 시: 기존 localStorage 동작으로 저장
+    function localFallbackSave(name, handle, desc) {
         var post = {
             id: Math.random().toString(36).slice(2, 8),
             img: pendingImg,
             name: name.slice(0, 20),
             handle: handle.slice(0, 24),
-            desc: (descInput.value || "").trim().slice(0, 60),
+            desc: (desc || "").slice(0, 60),
             ts: Date.now()
         };
         var posts = loadPosts();
@@ -135,8 +153,63 @@
         track("FEED_POST");
         closeModal();
         toast("🎉 " + post.name + "(이)가 피드에 올라왔어요!");
-        var sec = document.getElementById("community");
-        if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+        scrollToFeed();
+    }
+
+    function submitPost() {
+        var name = (nameInput.value || "").trim();
+        if (!pendingImg) { toast("사진을 먼저 선택해 주세요"); return; }
+        if (!name) { toast("아이 이름을 입력해 주세요 🐾"); nameInput.focus(); return; }
+        var handle = (handleInput.value || "").trim();
+        if (handle && handle[0] !== "@") handle = "@" + handle;
+        var desc = (descInput.value || "").trim();
+
+        var base = api();
+        // 백엔드 미설정 → 로컬 저장으로 폴백
+        if (!base) { localFallbackSave(name, handle, desc); return; }
+
+        // 백엔드 사용: 동물 판별 + 공유 피드 저장
+        submitBtn.disabled = true;
+        var prev = submitBtn.textContent;
+        submitBtn.textContent = "올리는 중… ⏳";
+        fetch(base + "/api/posts", {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify({
+                image: pendingImg,
+                name: name.slice(0, 20),
+                handle: handle.slice(0, 24),
+                desc: desc.slice(0, 60)
+            })
+        })
+            .then(function (r) { return r.json().then(function (d) { return { status: r.status, data: d }; }); })
+            .then(function (res) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = prev;
+                if (res.status === 200 && res.data && res.data.ok) {
+                    prependCard(res.data.post);
+                    track("FEED_POST");
+                    closeModal();
+                    toast("🎉 " + res.data.post.name + "(이)가 피드에 올라왔어요!");
+                    scrollToFeed();
+                } else if (res.status === 422) {
+                    // 동물이 아니라고 판별됨 → 거부 (로컬 폴백 안 함)
+                    track("FEED_REJECT_NONANIMAL");
+                    var labels = (res.data && res.data.labels) || [];
+                    var hint = labels.length
+                        ? " (인식: " + labels.slice(0, 3).map(function (l) { return l.name; }).join(", ") + ")"
+                        : "";
+                    toast("🐾 동물 사진만 올릴 수 있어요!" + hint);
+                } else {
+                    // 서버 오류 등 → 로컬 폴백
+                    localFallbackSave(name, handle, desc);
+                }
+            })
+            .catch(function () {
+                submitBtn.disabled = false;
+                submitBtn.textContent = prev;
+                localFallbackSave(name, handle, desc);
+            });
     }
 
     /* ---------- init ---------- */
