@@ -47,8 +47,8 @@
     <section class="panel active" data-panel="record">
       <div class="panel-head">
         <div class="eyebrow display">RECORD · 기록</div>
-        <h1>오늘 이 아이의 하루</h1>
-        <p>아이를 선택하고, 오늘의 순간을 사진으로 남겨요.</p>
+        <h1 data-i18n="recordTitle">오늘 이 아이의 하루</h1>
+        <p data-i18n="recordDesc">아이를 선택하고, 오늘의 순간을 사진으로 남겨요.</p>
       </div>
 
       <!-- 아이 선택/등록 라인 (가로 스크롤 칩 + 맨 오른쪽 ➕ 추가) -->
@@ -83,11 +83,11 @@
       <div class="ar-fallback" id="arFallback"><div class="ar-room"></div><div class="ar-floor"></div></div>
       <canvas class="ar-canvas" id="arCanvas"></canvas>
 
-      <div class="ar-empty" id="arEmpty">아이를 선택하면<br>이 자리에서 다시 만나요</div>
+      <div class="ar-empty" id="arEmpty" data-i18n-html="arEmpty">아이를 선택하면<br>이 자리에서 다시 만나요</div>
 
       <div class="ar-top">
         <div class="eyebrow display">REMEMBER · 기억</div>
-        <h1>다시 만나는 순간</h1>
+        <h1 data-i18n="rememberTitle">다시 만나는 순간</h1>
         <div class="ar-status" id="arStatus">카메라를 준비하고 있어요…</div>
       </div>
 
@@ -101,8 +101,8 @@
         <div class="ar-pets" id="arPets"></div>
         <input type="file" id="arFile" accept="image/*" hidden>
         <div class="ar-msgbar">
-          <input type="text" id="arMsg" class="ar-msg-input" placeholder="추모 한마디를 남겨요" maxlength="60" autocomplete="off">
-          <button type="button" class="ar-msg-btn" id="arMsgSave">남기기</button>
+          <input type="text" id="arMsg" class="ar-msg-input" data-i18n-ph="arMsgPh" placeholder="추모 한마디를 남겨요" maxlength="60" autocomplete="off">
+          <button type="button" class="ar-msg-btn" id="arMsgSave" data-i18n="arMsgBtn">남기기</button>
         </div>
       </div>
     </section>
@@ -111,18 +111,18 @@
     <section class="panel" data-panel="connect">
       <div class="panel-head">
         <div class="eyebrow display">CONNECT · 소통</div>
-        <h1>우리동네 댕댕이</h1>
-        <p>동네를 인증하면 진짜 이웃들과 마음을 나눌 수 있어요.</p>
+        <h1 data-i18n="communityH1">우리동네 댕댕이</h1>
+        <p data-i18n="communityDesc">동네를 인증하면 진짜 이웃들과 마음을 나눌 수 있어요.</p>
       </div>
       <div class="region-banner">
         <div class="rb-info">
           <span class="rb-dot"></span>
           <div>
             <div class="rb-status" data-i18n="communityTitle">현재 지역: 인증 준비 중</div>
-            <div class="rb-sub">인증하면 더 가까운 이웃을 만나요</div>
+            <div class="rb-sub" data-i18n="regionSub">인증하면 더 가까운 이웃을 만나요</div>
           </div>
         </div>
-        <button type="button" class="rb-btn" id="verifyBtn">우리 동네 인증하기</button>
+        <button type="button" class="rb-btn" id="verifyBtn" data-i18n="verifyBtn">우리 동네 인증하기</button>
       </div>
       <div class="feed" id="neighborFeed"></div>
     </section>
@@ -220,11 +220,11 @@
     <div class="modal modal-write" role="dialog" aria-modal="true" aria-label="아이 추가">
       <button type="button" class="modal-close" id="petClose" aria-label="닫기">&times;</button>
       <div class="modal-ic">🐾</div>
-      <h3>우리 아이 등록</h3>
-      <p>우리 아이의 이름을 입력해주세요</p>
+      <h3 data-i18n="petModalTitle">우리 아이 등록</h3>
+      <p data-i18n="petModalDesc">우리 아이의 이름을 입력해주세요</p>
       <input type="text" id="petNameInput" class="modal-input" placeholder="예: 초코" maxlength="20" autocomplete="off">
       <div class="modal-note" id="petNote"></div>
-      <button type="button" class="btn amber block" id="petSubmit">추가하기</button>
+      <button type="button" class="btn amber block" id="petSubmit" data-i18n="petSubmit">추가하기</button>
     </div>
   </div>
 

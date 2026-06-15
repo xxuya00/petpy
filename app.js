@@ -179,26 +179,50 @@
     ko: {
       recordTab: "기록하기", memoryTab: "기억하기", communityTab: "소통하기",
       uploadBtn: "내 앨범에서 사진 선택", captionPlaceholder: "추억 캡션 적기...", submitBtn: "등록하기",
-      addPetBtn: "아이 추가", noPetMsg: "먼저 아이를 추가해주세요.", communityTitle: "현재 지역: 전체",
-      fakeDoorBtn: "AI 3D로 보기", welcomeMsg: "오늘 우리 {petName}의 어떤 순간을 기록할까요?"
+      addPetBtn: "아이 추가", noPetMsg: "먼저 위의 ➕ 버튼을 눌러 아이를 등록해주세요!", communityTitle: "현재 지역: 전체",
+      fakeDoorBtn: "AI 3D로 보기", welcomeMsg: "오늘 우리 {petName}의 어떤 순간을 기록할까요?",
+      recordTitle: "오늘 이 아이의 하루", recordDesc: "아이를 선택하고, 오늘의 순간을 사진으로 남겨요.",
+      rememberTitle: "다시 만나는 순간", arEmpty: "아이를 선택하면<br>이 자리에서 다시 만나요",
+      arMsgPh: "추모 한마디를 남겨요", arMsgBtn: "남기기",
+      communityH1: "우리동네 댕댕이", communityDesc: "동네를 인증하면 진짜 이웃들과 마음을 나눌 수 있어요.",
+      regionSub: "인증하면 더 가까운 이웃을 만나요", verifyBtn: "우리 동네 인증하기",
+      petModalTitle: "우리 아이 등록", petModalDesc: "우리 아이의 이름을 입력해주세요", petSubmit: "추가하기"
     },
     en: {
       recordTab: "Record", memoryTab: "Sanctuary", communityTab: "Community",
       uploadBtn: "Select Photo from Gallery", captionPlaceholder: "Write a caption...", submitBtn: "Register",
-      addPetBtn: "Add Pet", noPetMsg: "Please add a pet first.", communityTitle: "Current Region: All",
-      fakeDoorBtn: "View AI 3D", welcomeMsg: "Which moment of {petName} shall we record today?"
+      addPetBtn: "Add Pet", noPetMsg: "Tap the ➕ button above to add your pet first!", communityTitle: "Current Region: All",
+      fakeDoorBtn: "View AI 3D", welcomeMsg: "Which moment of {petName} shall we record today?",
+      recordTitle: "Today with our pet", recordDesc: "Pick a pet and capture today's moment in a photo.",
+      rememberTitle: "The moment we meet again", arEmpty: "Pick a pet to<br>meet again right here",
+      arMsgPh: "Leave a word of remembrance", arMsgBtn: "Post",
+      communityH1: "Neighborhood Pets", communityDesc: "Verify your area to share your heart with real neighbors.",
+      regionSub: "Verify to meet closer neighbors", verifyBtn: "Verify My Area",
+      petModalTitle: "Register your pet", petModalDesc: "Please enter your pet's name", petSubmit: "Add"
     },
     ja: {
       recordTab: "記録", memoryTab: "思い出", communityTab: "コミュニティ",
       uploadBtn: "アルバムから写真を選択", captionPlaceholder: "キャプションを入力...", submitBtn: "登録",
-      addPetBtn: "ペットを追加", noPetMsg: "先にペットを追加してください。", communityTitle: "現在の地域: すべて",
-      fakeDoorBtn: "AI 3Dで見る", welcomeMsg: "今日の{petName}のどんな瞬間を記録しますか？"
+      addPetBtn: "ペットを追加", noPetMsg: "まず上の➕ボタンでペットを追加してください！", communityTitle: "現在の地域: すべて",
+      fakeDoorBtn: "AI 3Dで見る", welcomeMsg: "今日の{petName}のどんな瞬間を記録しますか？",
+      recordTitle: "今日のこの子の一日", recordDesc: "ペットを選んで、今日の瞬間を写真で残しましょう。",
+      rememberTitle: "再び出会う瞬間", arEmpty: "ペットを選ぶと<br>この場所で再会できます",
+      arMsgPh: "追悼の一言を残す", arMsgBtn: "残す",
+      communityH1: "ご近所のペット", communityDesc: "地域を認証すれば、本当のご近所さんと心を分かち合えます。",
+      regionSub: "認証するともっと近いご近所さんに出会えます", verifyBtn: "地域を認証する",
+      petModalTitle: "ペットを登録", petModalDesc: "ペットの名前を入力してください", petSubmit: "追加"
     },
     zh: {
       recordTab: "记录", memoryTab: "回忆", communityTab: "社区",
       uploadBtn: "从相册选择照片", captionPlaceholder: "写下说明...", submitBtn: "提交",
-      addPetBtn: "添加宠物", noPetMsg: "请先添加宠物。", communityTitle: "当前地区: 全部",
-      fakeDoorBtn: "查看 AI 3D", welcomeMsg: "今天记录{petName}的哪个瞬间呢？"
+      addPetBtn: "添加宠物", noPetMsg: "请先点击上方的➕按钮添加宠物！", communityTitle: "当前地区: 全部",
+      fakeDoorBtn: "查看 AI 3D", welcomeMsg: "今天记录{petName}的哪个瞬间呢？",
+      recordTitle: "这孩子的今天", recordDesc: "选择宠物，用照片记录今天的瞬间。",
+      rememberTitle: "再次相遇的瞬间", arEmpty: "选择宠物<br>就能在这里重逢",
+      arMsgPh: "留下一句追思的话", arMsgBtn: "留言",
+      communityH1: "邻里萌宠", communityDesc: "认证所在地区，即可与真实邻居分享心意。",
+      regionSub: "认证后遇见更近的邻居", verifyBtn: "认证我的地区",
+      petModalTitle: "登记宠物", petModalDesc: "请输入宠物的名字", petSubmit: "添加"
     }
   };
   var LANG_KEY = "petpy_lang";
@@ -216,6 +240,10 @@
     document.querySelectorAll("[data-i18n-ph]").forEach(function (el) {
       var k = el.getAttribute("data-i18n-ph");
       if (d[k] != null) el.setAttribute("placeholder", d[k]);
+    });
+    document.querySelectorAll("[data-i18n-html]").forEach(function (el) {
+      var k = el.getAttribute("data-i18n-html");
+      if (d[k] != null) el.innerHTML = d[k];
     });
     document.documentElement.setAttribute("lang", lang);
     document.querySelectorAll(".lang-select").forEach(function (s) { if (s.value !== lang) s.value = lang; });
