@@ -174,6 +174,62 @@
     } else { fallback(); }
   }
 
+  // ---------- 다국어(i18n) ----------
+  var i18n = {
+    ko: {
+      recordTab: "기록하기", memoryTab: "기억하기", communityTab: "소통하기",
+      uploadBtn: "내 앨범에서 사진 선택", captionPlaceholder: "추억 캡션 적기...", submitBtn: "등록하기",
+      addPetBtn: "아이 추가", noPetMsg: "먼저 아이를 추가해주세요.", communityTitle: "현재 지역: 전체",
+      fakeDoorBtn: "AI 3D로 보기", welcomeMsg: "오늘 우리 {petName}의 어떤 순간을 기록할까요?"
+    },
+    en: {
+      recordTab: "Record", memoryTab: "Sanctuary", communityTab: "Community",
+      uploadBtn: "Select Photo from Gallery", captionPlaceholder: "Write a caption...", submitBtn: "Register",
+      addPetBtn: "Add Pet", noPetMsg: "Please add a pet first.", communityTitle: "Current Region: All",
+      fakeDoorBtn: "View AI 3D", welcomeMsg: "Which moment of {petName} shall we record today?"
+    },
+    ja: {
+      recordTab: "記録", memoryTab: "思い出", communityTab: "コミュニティ",
+      uploadBtn: "アルバムから写真を選択", captionPlaceholder: "キャプションを入力...", submitBtn: "登録",
+      addPetBtn: "ペットを追加", noPetMsg: "先にペットを追加してください。", communityTitle: "現在の地域: すべて",
+      fakeDoorBtn: "AI 3Dで見る", welcomeMsg: "今日の{petName}のどんな瞬間を記録しますか？"
+    },
+    zh: {
+      recordTab: "记录", memoryTab: "回忆", communityTab: "社区",
+      uploadBtn: "从相册选择照片", captionPlaceholder: "写下说明...", submitBtn: "提交",
+      addPetBtn: "添加宠物", noPetMsg: "请先添加宠物。", communityTitle: "当前地区: 全部",
+      fakeDoorBtn: "查看 AI 3D", welcomeMsg: "今天记录{petName}的哪个瞬间呢？"
+    }
+  };
+  var LANG_KEY = "petpy_lang";
+  var lang = localStorage.getItem(LANG_KEY) || "ko";
+  if (!i18n[lang]) lang = "ko";
+  // 현재 언어의 키 텍스트 (모듈에서 동적 텍스트에 사용)
+  function T(key) { return (i18n[lang] || i18n.ko)[key] || (i18n.ko[key] || key); }
+
+  function updateLanguageUI() {
+    var d = i18n[lang] || i18n.ko;
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      var k = el.getAttribute("data-i18n");
+      if (d[k] != null) el.textContent = d[k];
+    });
+    document.querySelectorAll("[data-i18n-ph]").forEach(function (el) {
+      var k = el.getAttribute("data-i18n-ph");
+      if (d[k] != null) el.setAttribute("placeholder", d[k]);
+    });
+    document.documentElement.setAttribute("lang", lang);
+    document.querySelectorAll(".lang-select").forEach(function (s) { if (s.value !== lang) s.value = lang; });
+    // 동적 텍스트(기록 프롬프트·사진버튼 등)는 각 모듈이 이 이벤트로 갱신
+    window.dispatchEvent(new CustomEvent("petpy:lang", { detail: { lang: lang } }));
+  }
+  function setLang(l) { if (!i18n[l]) return; lang = l; try { localStorage.setItem(LANG_KEY, l); } catch (e) {} updateLanguageUI(); }
+  document.querySelectorAll(".lang-select").forEach(function (s) {
+    s.value = lang;
+    s.addEventListener("change", function () { setLang(s.value); });
+  });
+  // 모듈 초기화가 끝난 뒤(동기 IIFE 완료 후) 최초 1회 적용 → petpy:lang 리스너 등록 보장
+  setTimeout(updateLanguageUI, 0);
+
   // ---------- 상단 헤더: 고유 ID 복사 ----------
   document.getElementById("idChip").addEventListener("click", function () {
     var id = localStorage.getItem(KEY) || "";
