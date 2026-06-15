@@ -5,7 +5,7 @@
 
 // Replicate 백엔드 주소(기억창구 AI 누끼). 로컬 데모면 그대로, 배포면 배포 URL로.
 // 비우면("") 백엔드 호출 안 하고 데모 폴백(원본 이미지)으로 동작.
-window.PETPY_API = "http://localhost:8787";
+window.PETPY_API = "https://petpy.onrender.com";
 
 // Google Apps Script 웹앱 URL (Apps Script 배포 > 웹 앱 > 끝이 /exec 인 주소).
 // 예: "https://script.google.com/macros/s/AKfycb.../exec"

@@ -121,6 +121,24 @@ function predictionArgs(ref, input) {
         : { model: ref, input };
 }
 
+// 컷아웃 모델 레퍼런스 해석: "owner/name"이면 최신 버전을 붙여 "owner/name:version"으로.
+// (851-labs/background-remover 같은 커뮤니티 모델은 /v1/models/.../predictions 가 404 →
+//  버전 핀이 있어야 /v1/predictions 로 정상 실행됨. 첫 호출에 1번만 조회 후 캐시.)
+let _cutoutRef;
+async function cutoutRef() {
+    if (_cutoutRef) return _cutoutRef;
+    if (CUTOUT_MODEL.includes(":")) return (_cutoutRef = CUTOUT_MODEL);
+    const [owner, name] = CUTOUT_MODEL.split("/");
+    try {
+        const m = await replicate().models.get(owner, name);
+        const ver = m && m.latest_version && m.latest_version.id;
+        _cutoutRef = ver ? `${CUTOUT_MODEL}:${ver}` : CUTOUT_MODEL;
+    } catch {
+        _cutoutRef = CUTOUT_MODEL; // 조회 실패 시 원본 그대로(원래대로 시도)
+    }
+    return _cutoutRef;
+}
+
 /* ---------------- 앱 ---------------- */
 const app = express();
 app.use(express.json({ limit: "15mb" }));
@@ -149,7 +167,7 @@ app.post("/api/cutout", async (req, res, next) => {
         const { buffer, contentType } = decodeImage(req.body && req.body.image);
         const imageUrl = await uploadImage(buffer, contentType);
         const input = { [CUTOUT_IMAGE_KEY]: imageUrl, ...CUTOUT_EXTRA };
-        const output = await replicate().run(CUTOUT_MODEL, { input });
+        const output = await replicate().run(await cutoutRef(), { input });
         const image = outputToUrl(output);
         if (!image) throw httpError(502, "컷아웃 결과 없음");
         res.json({ ok: true, image });
