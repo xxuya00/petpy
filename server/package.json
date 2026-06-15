@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Petpy separate backend — Replicate image-to-video, AWS Rekognition animal moderation, S3/DynamoDB shared feed.",
+  "description": "Petpy thin backend — Replicate proxy for Memorial Garden core (background-removal cutout + image-to-video). No AWS.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -13,11 +13,6 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.1064.0",
-    "@aws-sdk/client-rekognition": "^3.1064.0",
-    "@aws-sdk/client-s3": "^3.1064.0",
-    "@aws-sdk/lib-dynamodb": "^3.1064.0",
-    "@aws-sdk/s3-request-presigner": "^3.1064.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

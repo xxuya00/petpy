@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>petpy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Gowun+Dodum&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- 상단바 -->
+  <div class="app-top">
+    <div class="logo">
+      <svg class="paw" viewBox="0 0 32 32" fill="none"><ellipse cx="9" cy="11" rx="3.2" ry="4.2" fill="#E8A04C"/><ellipse cx="16" cy="8.5" rx="3.4" ry="4.6" fill="#E8A04C"/><ellipse cx="23" cy="11" rx="3.2" ry="4.2" fill="#E8A04C"/><path d="M16 15c-4.4 0-8 3-8 6.4 0 2.6 2.2 4.1 5 4.1 1.3 0 2-.5 3-.5s1.7.5 3 .5c2.8 0 5-1.5 5-4.1C27 18 23.4 15 19 15h-3z" fill="#E8A04C"/></svg>
+      petpy
+    </div>
+    <button type="button" class="id-chip" id="idChip" title="고유 ID 복사하기">
+      <span class="ava" data-user-initial>?</span>
+      <span class="uid" data-user-id>초코언니_0000</span>
+      <span class="copy-ic" aria-hidden="true">📋</span>
+    </button>
+  </div>
+
+  <!-- 복사 토스트 -->
+  <div class="toast" id="toast"></div>
+
+  <!-- 메인: 탭별 컴포넌트 -->
+  <main class="app-main">
+
+    <!-- 1. 기록하기 -->
+    <section class="panel active" data-panel="record">
+      <div class="panel-head">
+        <div class="eyebrow display">RECORD · 기록</div>
+        <h1>오늘 이 아이의 하루</h1>
+        <p>아이를 선택하고, 오늘의 순간을 사진으로 남겨요.</p>
+      </div>
+
+      <!-- 아이 선택/등록 라인 (가로 스크롤 칩 + 맨 오른쪽 ➕ 추가) -->
+      <div class="pet-line" id="petLine">
+        <button type="button" class="pet-add" id="petAdd">➕ 아이 추가</button>
+      </div>
+
+      <!-- 등록된 아이가 없을 때 안내 -->
+      <div class="rec-empty-hint" id="recEmptyHint" hidden>먼저 위의 ➕ 버튼을 눌러 아이를 등록해주세요!</div>
+
+      <!-- 추억 입력 폼 (아이 선택 시 노출) -->
+      <div class="rec-form" id="recForm" hidden>
+        <div class="rec-prompt" id="recPrompt"></div>
+        <input type="file" id="recFile" accept="image/*" hidden>
+        <button type="button" class="photo-pick" id="recPhotoBtn">📸 내 앨범에서 사진 선택</button>
+        <div class="photo-preview" id="recPreview" hidden>
+          <img id="recPreviewImg" alt="선택한 사진 미리보기">
+          <button type="button" class="photo-remove" id="recPhotoRemove" aria-label="사진 제거">&times;</button>
+        </div>
+        <input type="text" id="recMemo" class="rec-input" placeholder="추억 캡션 적기 (예: 오늘 산책 최고였어!)" maxlength="60" autocomplete="off">
+        <div class="rec-note" id="recNote"></div>
+        <button type="button" class="btn amber block" id="recAdd">추억 등록하기</button>
+      </div>
+
+      <!-- 선택한 아이의 추억 2열 그리드 -->
+      <div class="rec-grid" id="recGrid"></div>
+    </section>
+
+    <!-- 2. 기억하기 — 2.5D AR 메모리얼(웹캠 + Three.js) -->
+    <section class="panel ar-panel" data-panel="remember">
+      <video class="ar-cam" id="arCam" autoplay muted playsinline></video>
+      <div class="ar-fallback" id="arFallback"><div class="ar-room"></div><div class="ar-floor"></div></div>
+      <canvas class="ar-canvas" id="arCanvas"></canvas>
+
+      <div class="ar-empty" id="arEmpty">아이를 선택하면<br>이 자리에서 다시 만나요</div>
+
+      <div class="ar-top">
+        <div class="eyebrow display">REMEMBER · 기억</div>
+        <h1>다시 만나는 순간</h1>
+        <div class="ar-status" id="arStatus">카메라를 준비하고 있어요…</div>
+      </div>
+
+      <div class="ar-spinner" id="arSpinner"><div class="ring"></div>AI가 배경을 분리하는 중…</div>
+
+      <div class="ar-caption" id="arCaption"></div>
+
+      <button type="button" class="ar-3d-btn" id="ar3dBtn">✦ AI 3D로 보기 <span>beta</span></button>
+
+      <div class="ar-dock">
+        <div class="ar-pets" id="arPets"></div>
+        <input type="file" id="arFile" accept="image/*" hidden>
+        <div class="ar-msgbar">
+          <input type="text" id="arMsg" class="ar-msg-input" placeholder="추모 한마디를 남겨요" maxlength="60" autocomplete="off">
+          <button type="button" class="ar-msg-btn" id="arMsgSave">남기기</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 소통하기 -->
+    <section class="panel" data-panel="connect">
+      <div class="panel-head">
+        <div class="eyebrow display">CONNECT · 소통</div>
+        <h1>우리동네 댕댕이</h1>
+        <p>동네를 인증하면 진짜 이웃들과 마음을 나눌 수 있어요.</p>
+      </div>
+      <div class="region-banner">
+        <div class="rb-info">
+          <span class="rb-dot"></span>
+          <div>
+            <div class="rb-status">현재 지역: 인증 준비 중</div>
+            <div class="rb-sub">인증하면 더 가까운 이웃을 만나요</div>
+          </div>
+        </div>
+        <button type="button" class="rb-btn" id="verifyBtn">우리 동네 인증하기</button>
+      </div>
+      <div class="feed" id="neighborFeed"></div>
+    </section>
+
+  </main>
+
+  <!-- 하단 고정 탭바 -->
+  <nav class="tabbar">
+    <button type="button" class="tab active" data-tab="record">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      <span class="lab">기록하기</span>
+    </button>
+    <button type="button" class="tab" data-tab="remember">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      <span class="lab">기억하기</span>
+    </button>
+    <button type="button" class="tab" data-tab="connect">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <span class="lab">소통하기</span>
+    </button>
+  </nav>
+
+  <!-- 소통창구: 동네 글쓰기 플로팅 버튼(소통 탭에서만 노출) -->
+  <button type="button" class="fab-write" id="postFab" aria-label="동네 글쓰기" title="동네 글쓰기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+
+  <!-- ============ 동네 인증 안내(베타: 전지역 통합) ============ -->
+  <div class="modal-overlay" id="verifyModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="동네 인증 안내">
+      <button type="button" class="modal-close" id="verifyClose" aria-label="닫기">&times;</button>
+      <div class="modal-ic">📢</div>
+      <h3>안내</h3>
+      <p>현재 베타 버전에서는 모든 지역의 펫피가 통합되어 보여집니다.<br>정식 출시 시 동네별 매칭 기능이 제공될 예정입니다.</p>
+      <button type="button" class="btn sage block" id="verifyOk">확인</button>
+    </div>
+  </div>
+
+  <!-- ============ AI 3D 업그레이드(페이크도어 · 수요조사) ============ -->
+  <div class="modal-overlay" id="ar3dModal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="AI 3D 업그레이드">
+      <button type="button" class="modal-close" id="ar3dClose" aria-label="닫기">&times;</button>
+      <div class="modal-ic">✦</div>
+      <h3>AI 3D로 다시 만나기</h3>
+      <p>사진 한 장을 입체(3D)로 복원해<br>더 생생하게 곁에 두는 기능을 준비 중이에요.<br>가장 먼저 체험해 보시겠어요?</p>
+      <input type="email" class="modal-input" id="ar3dEmail" placeholder="이메일 주소" autocomplete="off">
+      <div class="modal-note" id="ar3dNote"></div>
+      <button type="button" class="btn violet block" id="ar3dSubmit">3D 베타 신청하기</button>
+    </div>
+  </div>
+
+  <!-- ============ 소통창구: 동네 글쓰기 모달 ============ -->
+  <div class="modal-overlay" id="postModal" aria-hidden="true">
+    <div class="modal modal-write" role="dialog" aria-modal="true" aria-label="동네 글쓰기">
+      <button type="button" class="modal-close" id="postClose" aria-label="닫기">&times;</button>
+      <div class="modal-ic">🐾</div>
+      <h3>우리동네 이야기</h3>
+      <div class="write-author" id="postAuthor">작성자: 보호자</div>
+      <textarea id="postText" class="modal-textarea" rows="4" maxlength="300"
+        placeholder="이웃들과 나누고 싶은 이야기를 적어주세요"></textarea>
+      <input type="file" id="postFile" accept="image/*" hidden>
+      <button type="button" class="photo-pick" id="postPhotoBtn">📸 내 앨범에서 사진 선택</button>
+      <div class="photo-preview" id="postPreview" hidden>
+        <img id="postPreviewImg" alt="선택한 사진 미리보기">
+        <button type="button" class="photo-remove" id="postPhotoRemove" aria-label="사진 제거">&times;</button>
+      </div>
+      <div class="modal-note" id="postNote"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn ghost" id="postCancel">취소</button>
+        <button type="button" class="btn sage" id="postSubmit">등록하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 소통창구: 상세보기 + 댓글 모달 ============ -->
+  <div class="modal-overlay" id="detailModal" aria-hidden="true">
+    <div class="modal modal-detail" role="dialog" aria-modal="true" aria-label="게시글 상세">
+      <button type="button" class="modal-close" id="detailClose" aria-label="닫기">&times;</button>
+      <div class="detail-post">
+        <div class="detail-head"><span class="da" id="detailAuthor"></span><span class="dt" id="detailTime"></span></div>
+        <div class="detail-photo" id="detailPhoto" hidden><img id="detailPhotoImg" alt=""></div>
+        <div class="detail-body" id="detailBody"></div>
+      </div>
+      <div class="detail-cmt-head" id="detailCmtCount">댓글</div>
+      <div class="detail-comments" id="detailComments"></div>
+      <div class="detail-cmt-bar">
+        <input type="text" id="detailCmtInput" class="cmt-input" placeholder="댓글을 입력해요" maxlength="200" autocomplete="off">
+        <button type="button" class="cmt-send" id="detailCmtSend">등록</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 기록창구: 아이 추가 모달 ============ -->
+  <div class="modal-overlay" id="petModal" aria-hidden="true">
+    <div class="modal modal-write" role="dialog" aria-modal="true" aria-label="아이 추가">
+      <button type="button" class="modal-close" id="petClose" aria-label="닫기">&times;</button>
+      <div class="modal-ic">🐾</div>
+      <h3>우리 아이 등록</h3>
+      <p>우리 아이의 이름을 입력해주세요</p>
+      <input type="text" id="petNameInput" class="modal-input" placeholder="예: 초코" maxlength="20" autocomplete="off">
+      <div class="modal-note" id="petNote"></div>
+      <button type="button" class="btn amber block" id="petSubmit">추가하기</button>
+    </div>
+  </div>
+
+  <!-- ============ 온보딩(로그인 우회) ============ -->
+  <div class="onb" id="onb">
+
+    <!-- step 1: 이름 입력 -->
+    <div class="onb-step active" id="stepName">
+      <div class="onb-brand">
+        <svg class="paw" viewBox="0 0 32 32" fill="none"><ellipse cx="9" cy="11" rx="3.2" ry="4.2" fill="#E8A04C"/><ellipse cx="16" cy="8.5" rx="3.4" ry="4.6" fill="#E8A04C"/><ellipse cx="23" cy="11" rx="3.2" ry="4.2" fill="#E8A04C"/><path d="M16 15c-4.4 0-8 3-8 6.4 0 2.6 2.2 4.1 5 4.1 1.3 0 2-.5 3-.5s1.7.5 3 .5c2.8 0 5-1.5 5-4.1C27 18 23.4 15 19 15h-3z" fill="#E8A04C"/></svg>
+        petpy
+      </div>
+      <div class="onb-mid">
+        <h2>보호자님의 이름을<br>입력해 주세요</h2>
+        <p class="desc">펫피에서 불릴 이름이에요.<br>우리 아이와 함께할 보호자님을 등록할게요.</p>
+        <input type="text" class="onb-input" id="onbName" placeholder="예: 초코언니" maxlength="16" autocomplete="off">
+        <div class="onb-note" id="onbNameNote"></div>
+        <button type="button" class="onb-btn primary" id="onbConfirm">확인</button>
+      </div>
+      <div class="onb-foot">
+        <button type="button" class="onb-link" id="onbFindLink">👉 이미 생성된 펫피 찾아오기</button>
+      </div>
+    </div>
+
+    <!-- step 2: 고유 ID 생성 완료 -->
+    <div class="onb-step" id="stepCreated">
+      <div class="onb-brand">
+        <svg class="paw" viewBox="0 0 32 32" fill="none"><ellipse cx="9" cy="11" rx="3.2" ry="4.2" fill="#E8A04C"/><ellipse cx="16" cy="8.5" rx="3.4" ry="4.6" fill="#E8A04C"/><ellipse cx="23" cy="11" rx="3.2" ry="4.2" fill="#E8A04C"/><path d="M16 15c-4.4 0-8 3-8 6.4 0 2.6 2.2 4.1 5 4.1 1.3 0 2-.5 3-.5s1.7.5 3 .5c2.8 0 5-1.5 5-4.1C27 18 23.4 15 19 15h-3z" fill="#E8A04C"/></svg>
+        petpy
+      </div>
+      <div class="onb-mid">
+        <div class="onb-eyebrow">Welcome</div>
+        <h2>펫피가 만들어졌어요!</h2>
+        <p class="desc">이제부터 이 고유 ID로 펫피를 찾을 수 있어요.</p>
+        <div class="id-badge" id="onbIdBadge">초코언니_0000</div>
+        <div class="warn">⚠️ <b>브라우저가 바뀌면 이 ID를 입력해야 펫피를 찾을 수 있습니다.</b> 잊지 않도록 꼭 복사해서 보관해 주세요.</div>
+        <button type="button" class="onb-btn outline" id="onbCopy">고유 ID 복사하기</button>
+        <div class="onb-note" id="onbCopyNote"></div>
+        <button type="button" class="onb-btn primary" id="onbStart">펫피 시작하기</button>
+      </div>
+    </div>
+
+    <!-- step 3: 기존 ID로 찾아오기(탈출구) -->
+    <div class="onb-step" id="stepFind">
+      <div class="onb-brand">
+        <svg class="paw" viewBox="0 0 32 32" fill="none"><ellipse cx="9" cy="11" rx="3.2" ry="4.2" fill="#E8A04C"/><ellipse cx="16" cy="8.5" rx="3.4" ry="4.6" fill="#E8A04C"/><ellipse cx="23" cy="11" rx="3.2" ry="4.2" fill="#E8A04C"/><path d="M16 15c-4.4 0-8 3-8 6.4 0 2.6 2.2 4.1 5 4.1 1.3 0 2-.5 3-.5s1.7.5 3 .5c2.8 0 5-1.5 5-4.1C27 18 23.4 15 19 15h-3z" fill="#E8A04C"/></svg>
+        petpy
+      </div>
+      <div class="onb-mid">
+        <div class="onb-eyebrow">Restore</div>
+        <h2>펫피 찾아오기</h2>
+        <p class="desc">예전에 만든 고유 ID를 입력하면<br>이어서 사용할 수 있어요.</p>
+        <input type="text" class="onb-input" id="onbFindInput" placeholder="예: 초코언니_8492" autocomplete="off">
+        <div class="onb-note" id="onbFindNote"></div>
+        <button type="button" class="onb-btn primary" id="onbFindBtn">펫피 찾기</button>
+      </div>
+      <div class="onb-foot">
+        <button type="button" class="onb-link" id="onbBack">← 처음으로</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- 공통 설정(PETPY_API · PETPY_GAS) — config.js 한 곳에서 관리 -->
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script type="module" src="app-ar.js"></script>
+</body>
+</html>

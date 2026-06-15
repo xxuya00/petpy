@@ -1,58 +1,61 @@
 /*
- * Petpy — separate backend (Node/Express, ESM)
+ * Petpy — thin backend (Node/Express, ESM)
  *
- * Endpoints
- *   GET  /health                 서비스 설정 상태
- *   POST /api/moderate           Rekognition 동물 판별  { image } -> { ok, matched, labels }
- *   POST /api/posts              동물 통과 시 S3 업로드 + DynamoDB 저장  { image, name, handle, desc }
- *   GET  /api/posts              공유 피드 목록(최신순, presigned URL)
- *   POST /api/animate            Replicate 이미지→비디오 예측 시작  { image } -> { id }
- *   GET  /api/animate/:id        예측 상태/결과  -> { status, video, error }
+ * Memorial Garden(기억) 코어 기능을 위한 Replicate 전용 프록시.
+ * AWS 없음(S3/DynamoDB/Rekognition 제거). 이미지는 Replicate 파일 업로드로 전달하므로
+ * 별도 스토리지가 필요 없습니다. API 키는 서버 환경변수에만 존재합니다.
  *
- * 키는 환경변수에서만 읽습니다(코드/프론트에 노출 금지).
- *   REPLICATE_API_TOKEN, REPLICATE_MODEL, REPLICATE_IMAGE_KEY, REPLICATE_INPUT_JSON
- *   AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET, DDB_TABLE
- *   PORT, ALLOWED_ORIGINS, MODERATION_MIN_CONFIDENCE, PRESIGN_EXPIRES
+ *   [브라우저: 정적 프론트] ──fetch(window.PETPY_API)──► [이 서버] ──► Replicate
+ *                                                                 ├─ 배경 제거(컷아웃)  : 라이브
+ *                                                                 └─ 이미지→비디오(애니) : 사전 생성
+ *
+ * 엔드포인트
+ *   GET  /health             설정 상태 { ok, services }
+ *   POST /api/cutout         배경 제거  { image } -> { ok, image }            (데모: 라이브/빠름)
+ *   POST /api/animate        이미지→비디오 예측 시작 { image } -> { id, status } (데모: 사전 생성/느림)
+ *   GET  /api/animate/:id    예측 상태/결과 -> { status, video, error }
+ *
+ * 환경변수 (.env.example 참고)
+ *   REPLICATE_API_TOKEN (필수)
+ *   REPLICATE_CUTOUT_MODEL, REPLICATE_CUTOUT_IMAGE_KEY, REPLICATE_CUTOUT_INPUT_JSON
+ *   REPLICATE_ANIMATE_MODEL, REPLICATE_ANIMATE_IMAGE_KEY, REPLICATE_ANIMATE_INPUT_JSON
+ *   PORT, ALLOWED_ORIGINS
  */
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import crypto from "node:crypto";
-
 import Replicate from "replicate";
-import { RekognitionClient, DetectLabelsCommand } from "@aws-sdk/client-rekognition";
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 
 /* ---------------- 설정 ---------------- */
 const PORT = process.env.PORT || 8787;
-const REGION = process.env.AWS_REGION || "us-east-1";
-const S3_BUCKET = process.env.S3_BUCKET || "";
-const DDB_TABLE = process.env.DDB_TABLE || "petpy-posts";
 const REPLICATE_TOKEN = process.env.REPLICATE_API_TOKEN || "";
-const REPLICATE_MODEL = process.env.REPLICATE_MODEL || "stability-ai/stable-video-diffusion";
-const REPLICATE_IMAGE_KEY = process.env.REPLICATE_IMAGE_KEY || "input_image";
-const MIN_CONF = Number(process.env.MODERATION_MIN_CONFIDENCE || 80);
-const PRESIGN_EXPIRES = Math.min(Number(process.env.PRESIGN_EXPIRES || 604800), 604800); // SigV4 최대 7일
 
-// 동물로 인정할 라벨/카테고리
-const ANIMAL_LABELS = new Set(
-    (process.env.ANIMAL_LABELS ||
-        "Animal,Pet,Dog,Cat,Puppy,Kitten,Canine,Feline,Mammal,Bird,Hamster,Rabbit,Bunny,Reptile,Fish,Wildlife,Horse,Hedgehog,Ferret,Guinea Pig,Parrot,Turtle,Rodent,Pig,Lizard,Snake,Fox,Squirrel"
-    ).split(",").map((s) => s.trim()).filter(Boolean)
+// 배경 제거(컷아웃) — 빠르고 저렴, 데모에서 라이브로 호출
+const CUTOUT_MODEL = process.env.REPLICATE_CUTOUT_MODEL || "851-labs/background-remover";
+const CUTOUT_IMAGE_KEY = process.env.REPLICATE_CUTOUT_IMAGE_KEY || "image";
+
+// 이미지→비디오(애니메이트) — 느리고 유료, 데모에서는 사전 생성 권장
+//  (구버전 .env 호환: REPLICATE_MODEL / REPLICATE_IMAGE_KEY 도 인식)
+const ANIMATE_MODEL =
+    process.env.REPLICATE_ANIMATE_MODEL ||
+    process.env.REPLICATE_MODEL ||
+    "stability-ai/stable-video-diffusion";
+const ANIMATE_IMAGE_KEY =
+    process.env.REPLICATE_ANIMATE_IMAGE_KEY ||
+    process.env.REPLICATE_IMAGE_KEY ||
+    "input_image";
+
+const CUTOUT_EXTRA = parseJsonEnv(process.env.REPLICATE_CUTOUT_INPUT_JSON);
+const ANIMATE_EXTRA = parseJsonEnv(
+    process.env.REPLICATE_ANIMATE_INPUT_JSON || process.env.REPLICATE_INPUT_JSON
 );
-const ANIMAL_CATEGORIES = new Set(["Animals and Pets"]);
 
 /* ---------------- 클라이언트(지연 생성) ---------------- */
-let _rek, _s3, _ddb, _replicate;
-function rek() { return (_rek ||= new RekognitionClient({ region: REGION })); }
-function s3() { return (_s3 ||= new S3Client({ region: REGION })); }
-function ddb() { return (_ddb ||= DynamoDBDocumentClient.from(new DynamoDBClient({ region: REGION }))); }
+let _replicate;
 function replicate() {
     if (!REPLICATE_TOKEN) throw httpError(503, "REPLICATE_API_TOKEN 미설정");
-    return (_replicate ||= new Replicate({ auth: REPLICATE_TOKEN }));
+    // useFileOutput:false → 출력 파일을 일반 URL 문자열로 받음(프록시로 그대로 전달하기 쉬움)
+    return (_replicate ||= new Replicate({ auth: REPLICATE_TOKEN, useFileOutput: false }));
 }
 
 /* ---------------- 유틸 ---------------- */
@@ -62,7 +65,18 @@ function httpError(status, message) {
     return e;
 }
 
-// "data:image/png;base64,xxxx" 또는 순수 base64 → { buffer, contentType, ext }
+function parseJsonEnv(raw) {
+    if (!raw) return {};
+    try {
+        const v = JSON.parse(raw);
+        return v && typeof v === "object" ? v : {};
+    } catch {
+        console.warn("[warn] INPUT_JSON 파싱 실패 — 무시:", raw);
+        return {};
+    }
+}
+
+// "data:image/png;base64,xxxx" 또는 순수 base64 → { buffer, contentType }
 function decodeImage(input) {
     if (!input || typeof input !== "string") throw httpError(400, "image(dataURL) 필요");
     const m = /^data:([^;]+);base64,(.*)$/s.exec(input);
@@ -70,45 +84,41 @@ function decodeImage(input) {
     const b64 = m ? m[2] : input;
     const buffer = Buffer.from(b64, "base64");
     if (!buffer.length) throw httpError(400, "이미지 디코드 실패");
-    const ext = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif" }[contentType] || "bin";
-    return { buffer, contentType, ext };
+    return { buffer, contentType };
 }
 
-function requireBucket() {
-    if (!S3_BUCKET) throw httpError(503, "S3_BUCKET 미설정");
-    return S3_BUCKET;
+// Replicate 파일 스토리지에 업로드 → 모델이 가져갈 수 있는 URL 반환(S3 대체)
+async function uploadImage(buffer, contentType) {
+    const blob = new Blob([buffer], { type: contentType || "application/octet-stream" });
+    const file = await replicate().files.create(blob);
+    const url = file && file.urls && file.urls.get;
+    if (!url) throw httpError(502, "Replicate 파일 업로드 실패");
+    return url;
 }
 
-async function uploadToS3(buffer, contentType, key) {
-    const Bucket = requireBucket();
-    await s3().send(new PutObjectCommand({ Bucket, Key: key, Body: buffer, ContentType: contentType }));
-    return key;
-}
-
-async function presign(key) {
-    const Bucket = requireBucket();
-    return getSignedUrl(s3(), new GetObjectCommand({ Bucket, Key: key }), { expiresIn: PRESIGN_EXPIRES });
-}
-
-// Rekognition 동물 판별
-async function detectAnimal(buffer) {
-    const out = await rek().send(new DetectLabelsCommand({
-        Image: { Bytes: buffer },
-        MaxLabels: 30,
-        MinConfidence: Math.min(MIN_CONF, 55), // 후보는 낮게 받고 아래서 판정
-    }));
-    const labels = out.Labels || [];
-    const matched = [];
-    for (const l of labels) {
-        const conf = l.Confidence || 0;
-        if (conf < MIN_CONF) continue;
-        const byName = ANIMAL_LABELS.has(l.Name);
-        const byParent = (l.Parents || []).some((p) => ANIMAL_LABELS.has(p.Name));
-        const byCat = (l.Categories || []).some((c) => ANIMAL_CATEGORIES.has(c.Name));
-        if (byName || byParent || byCat) matched.push({ name: l.Name, confidence: Math.round(conf) });
+// 모델 출력에서 최종 결과 URL 한 개만 추출(문자열/배열/객체 모두 대응)
+function outputToUrl(o) {
+    if (o == null) return null;
+    if (typeof o === "string") return o;
+    if (Array.isArray(o)) return outputToUrl(o[o.length - 1]);
+    if (typeof o === "object") {
+        const u = o.url;
+        if (typeof u === "function") {
+            const r = u.call(o);
+            return r && r.href ? r.href : typeof r === "string" ? r : null;
+        }
+        if (u && typeof u === "object" && u.href) return u.href;
+        if (typeof u === "string") return u;
+        return o.video || o.image || o.output || o.mp4 || null;
     }
-    const top = labels.slice(0, 8).map((l) => ({ name: l.Name, confidence: Math.round(l.Confidence || 0) }));
-    return { ok: matched.length > 0, matched, labels: top };
+    return null;
+}
+
+// "owner/model" 또는 "owner/model:version" → predictions.create 인자
+function predictionArgs(ref, input) {
+    return ref.includes(":")
+        ? { version: ref.split(":")[1], input }
+        : { model: ref, input };
 }
 
 /* ---------------- 앱 ---------------- */
@@ -119,7 +129,7 @@ const origins = (process.env.ALLOWED_ORIGINS || "*").split(",").map((s) => s.tri
 app.use(cors({ origin: origins.includes("*") ? true : origins }));
 
 app.get("/", (_req, res) => {
-    res.type("text").send("Petpy backend — see /health, POST /api/moderate, /api/posts, /api/animate");
+    res.type("text").send("Petpy thin backend — see /health, POST /api/cutout, /api/animate");
 });
 
 app.get("/health", (_req, res) => {
@@ -127,105 +137,49 @@ app.get("/health", (_req, res) => {
         ok: true,
         services: {
             replicate: !!REPLICATE_TOKEN,
-            s3: !!S3_BUCKET,
-            region: REGION,
-            ddbTable: DDB_TABLE,
-            replicateModel: REPLICATE_MODEL,
+            cutoutModel: CUTOUT_MODEL,
+            animateModel: ANIMATE_MODEL,
         },
     });
 });
 
-// 동물 판별만
-app.post("/api/moderate", async (req, res, next) => {
+// 배경 제거(컷아웃) — 라이브 호출. run()은 완료까지 기다렸다 결과 URL을 돌려줌.
+app.post("/api/cutout", async (req, res, next) => {
     try {
-        const { buffer } = decodeImage(req.body && req.body.image);
-        const result = await detectAnimal(buffer);
-        res.json(result);
-    } catch (e) { next(e); }
+        const { buffer, contentType } = decodeImage(req.body && req.body.image);
+        const imageUrl = await uploadImage(buffer, contentType);
+        const input = { [CUTOUT_IMAGE_KEY]: imageUrl, ...CUTOUT_EXTRA };
+        const output = await replicate().run(CUTOUT_MODEL, { input });
+        const image = outputToUrl(output);
+        if (!image) throw httpError(502, "컷아웃 결과 없음");
+        res.json({ ok: true, image });
+    } catch (e) {
+        next(e);
+    }
 });
 
-// 공유 피드: 업로드(동물 통과 시 저장)
-app.post("/api/posts", async (req, res, next) => {
-    try {
-        const body = req.body || {};
-        const { buffer, contentType, ext } = decodeImage(body.image);
-        const name = String(body.name || "").trim().slice(0, 20);
-        if (!name) throw httpError(400, "name 필요");
-
-        const verdict = await detectAnimal(buffer);
-        if (!verdict.ok) {
-            return res.status(422).json({ ok: false, reason: "not_animal", ...verdict });
-        }
-
-        const id = crypto.randomBytes(6).toString("hex");
-        const key = `posts/${id}.${ext}`;
-        await uploadToS3(buffer, contentType, key);
-
-        const item = {
-            id,
-            name,
-            handle: String(body.handle || "").trim().slice(0, 24),
-            desc: String(body.desc || "").trim().slice(0, 60),
-            key,
-            ts: Date.now(),
-        };
-        await ddb().send(new PutCommand({ TableName: DDB_TABLE, Item: item }));
-
-        const img = await presign(key);
-        res.json({ ok: true, post: { id: item.id, name: item.name, handle: item.handle, desc: item.desc, ts: item.ts, img } });
-    } catch (e) { next(e); }
-});
-
-// 공유 피드: 목록(최신순)
-app.get("/api/posts", async (_req, res, next) => {
-    try {
-        const out = await ddb().send(new ScanCommand({ TableName: DDB_TABLE, Limit: 100 }));
-        const items = (out.Items || []).sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, 50);
-        const posts = await Promise.all(items.map(async (it) => ({
-            id: it.id, name: it.name, handle: it.handle, desc: it.desc, ts: it.ts,
-            img: await presign(it.key),
-        })));
-        res.json({ posts });
-    } catch (e) { next(e); }
-});
-
-// 이미지 → 비디오: 예측 시작
+// 이미지 → 비디오: 예측 시작(느림 → 폴링). 데모에서는 사전 생성 권장.
 app.post("/api/animate", async (req, res, next) => {
     try {
-        const { buffer, contentType, ext } = decodeImage(req.body && req.body.image);
-        // Replicate가 가져갈 수 있도록 S3에 임시 업로드 후 presigned URL 전달
-        const key = `animate/${crypto.randomBytes(6).toString("hex")}.${ext}`;
-        await uploadToS3(buffer, contentType, key);
-        const imageUrl = await presign(key);
-
-        let extra = {};
-        if (process.env.REPLICATE_INPUT_JSON) {
-            try { extra = JSON.parse(process.env.REPLICATE_INPUT_JSON); } catch { /* 무시 */ }
-        }
-        const input = { [REPLICATE_IMAGE_KEY]: imageUrl, ...extra };
-
-        const args = REPLICATE_MODEL.includes(":")
-            ? { version: REPLICATE_MODEL.split(":")[1], input }
-            : { model: REPLICATE_MODEL, input };
-        const prediction = await replicate().predictions.create(args);
-
+        const { buffer, contentType } = decodeImage(req.body && req.body.image);
+        const imageUrl = await uploadImage(buffer, contentType);
+        const input = { [ANIMATE_IMAGE_KEY]: imageUrl, ...ANIMATE_EXTRA };
+        const prediction = await replicate().predictions.create(predictionArgs(ANIMATE_MODEL, input));
         res.json({ id: prediction.id, status: prediction.status });
-    } catch (e) { next(e); }
+    } catch (e) {
+        next(e);
+    }
 });
 
 // 이미지 → 비디오: 상태/결과 폴링
 app.get("/api/animate/:id", async (req, res, next) => {
     try {
         const p = await replicate().predictions.get(req.params.id);
-        let video = null;
-        if (p.status === "succeeded") {
-            const o = p.output;
-            if (Array.isArray(o)) video = o[o.length - 1];
-            else if (typeof o === "string") video = o;
-            else if (o && typeof o === "object") video = o.video || o.mp4 || null;
-        }
+        const video = p.status === "succeeded" ? outputToUrl(p.output) : null;
         res.json({ status: p.status, video, error: p.error || null });
-    } catch (e) { next(e); }
+    } catch (e) {
+        next(e);
+    }
 });
 
 // 에러 핸들러
@@ -236,6 +190,6 @@ app.use((err, _req, res, _next) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Petpy backend listening on :${PORT}`);
-    console.log(`  replicate=${!!REPLICATE_TOKEN} s3=${!!S3_BUCKET} region=${REGION} table=${DDB_TABLE} model=${REPLICATE_MODEL}`);
+    console.log(`Petpy thin backend listening on :${PORT}`);
+    console.log(`  replicate=${!!REPLICATE_TOKEN} cutout=${CUTOUT_MODEL} animate=${ANIMATE_MODEL}`);
 });
