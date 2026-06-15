@@ -35,6 +35,7 @@
       <div class="eyebrow-tag display"><span class="num">1</span>기록하기</div>
       <h2>오늘 이 아이의 하루를,<br>한 장면도 놓치지 않게.</h2>
       <p class="body">밥 먹는 모습, 첫 산책, 나를 반기던 그 눈빛까지.<br>사진과 영상을 날짜별로 남기면<br>petpy가 우리 아이만의 타임라인을 만들어 줍니다.</p>
+      <button type="button" class="feat-cta" data-feature="record">이 기능, 기대돼요 👍</button>
     </div>
     <div class="phone-holder">
       <div class="phone"><div class="screen">
@@ -54,9 +55,9 @@
               <div class="gcap up-cap"><b></b><span></span></div>
               <div class="up-badge">방금</div>
             </div>
-            <div class="gcard"><img src="images/1.png" alt=""><div class="gcap"><b>뭉이</b>초롱초롱 눈맞춤</div></div>
-            <div class="gcard"><img src="images/2.png" alt=""><div class="gcap"><b>보리</b>산책 가자! 🐾</div></div>
-            <div class="gcard"><img src="images/4.png" alt=""><div class="gcap"><b>나비</b>책장 탐험 중</div></div>
+            <div class="gcard"><img src="images/1.png" alt=""><div class="gcap"><b>초롱초롱 눈맞춤</b><span>어제</span></div></div>
+            <div class="gcard"><img src="images/2.png" alt=""><div class="gcap"><b>산책 가자! 🐾</b><span>3일 전</span></div></div>
+            <div class="gcard"><img src="images/4.png" alt=""><div class="gcap"><b>책장 탐험 중</b><span>5일 전</span></div></div>
           </div>
           <div class="m-composer" id="recComposer">
             <div class="cmp-row">
@@ -110,6 +111,7 @@
       <h2>곁에 없어도,<br>다시 부를 수 있도록.</h2>
       <p class="body">언젠가 이별의 순간이 와도, 기록은 사라지지 않습니다.<br>늘 함께였던 그 자리에 휴대폰을 비추면, AR로 다시 만날 수 있어요.</p>
       <p class="body" style="margin-top:16px;font-weight:600"><a href="app.html" class="core-link">✦ petpy의 핵심 기능 · 베타에서 가장 먼저 체험하세요 →</a></p>
+      <button type="button" class="feat-cta" data-feature="remember">이 기능, 기대돼요 👍</button>
     </div>
   </div>
 </section>
@@ -121,6 +123,7 @@
       <div class="eyebrow-tag display"><span class="num">3</span>소통하기</div>
       <h2>우리 동네 이웃들과,<br>같은 마음을 나눠요.</h2>
       <p class="body">동네 인증을 마친 진짜 이웃들과만 연결됩니다. 산책 메이트를 찾고, 정보를 나누고, 같은 마음을 가진 사람들과 가까워지세요.</p>
+      <button type="button" class="feat-cta" data-feature="connect">이 기능, 기대돼요 👍</button>
     </div>
     <div class="phone-holder">
       <div class="phone"><div class="screen">
@@ -177,6 +180,9 @@
 
 <!-- 백엔드 주소: 데모는 로컬 실행 권장. 비우면("") 백엔드 없이 데모 폴백으로 동작 -->
 <!-- 공통 설정(PETPY_API · PETPY_GAS) — app.html과 동일한 config.js 공유 -->
+<!-- 기능별 관심 클릭 토스트 -->
+<div class="toast" id="toast"></div>
+
 <script src="config.js"></script>
 <script src="petpy.js"></script>
 </body>

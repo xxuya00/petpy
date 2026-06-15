@@ -103,9 +103,9 @@
     const PH='추억 캡션 적기 (예: 오늘 산책 최고였어!)';
     const BASE=327;
     // 업로드 슬롯 전용 사진은 그리드 base 카드(images/1·2·4)에 없는 images/3 → 화면에 같은 사진이 중복돼 보이지 않음
-    const UP_IMG='images/3.png', UP_PET='뭉이';
+    const UP_IMG='images/3.png';
     const caps=['햇살 아래 단잠 😴','오늘의 간식 타임 🍖','창밖 구경 삼매경 🐶','산책 다녀왔어요 🐾'];
-    const items=caps.map(c=>({img:UP_IMG,pet:UP_PET,cap:c}));
+    const items=caps.map(c=>({img:UP_IMG,cap:c}));
     let idx=0,started=false;
     const wait=ms=>new Promise(r=>setTimeout(r,ms));
 
@@ -144,8 +144,8 @@
       await wait(360);
       slot.classList.add('uploading');
       await wait(960);
-      // 5) 완료 — 캡션/방금 뱃지/카운트
-      capB.textContent=it.pet;capS.textContent=it.cap;
+      // 5) 완료 — 캡션(굵게)/날짜/방금 뱃지/카운트
+      capB.textContent=it.cap;capS.textContent='오늘';
       slot.classList.remove('uploading');slot.classList.add('done');
       cnt.textContent=BASE+1;
       await wait(2600);
@@ -286,6 +286,31 @@
       msgInput.value='';
       note.innerHTML='메시지를 기억에 담았어요 💜';
     });
+  })();
+
+  // ============ 기능별 '기대돼요' 관심 클릭(가짜문) → Apps Script 'clicks' 탭 ============
+  // 기록/기억/소통 섹션의 동일 CTA 클릭을 기능별로 적재 → 기능별 수요(이항검정)·상호 비교 근거.
+  // 세션당 기능별 1회만 적재(중복 방지). 분모 n(visits)·분자 k(clicks) 모두 '세션' 단위로 일치.
+  // clicks 탭 헤더: feature | sid | created_at
+  (function(){
+    var btns=document.querySelectorAll('.feat-cta');
+    if(!btns.length) return;
+    var GAS=(window.PETPY_GAS||'').replace(/\/+$/,'');
+    function sid(){try{var s=sessionStorage.getItem('petpy_sid');if(!s){s='s'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);sessionStorage.setItem('petpy_sid',s);}return s;}catch(e){return '';}}
+    function toast(msg){var t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('show');},2600);}
+    function markDone(b){b.classList.add('done');b.textContent='기대 표시 완료 ✓';}
+    function seen(f){try{return !!sessionStorage.getItem('petpy_click_'+f);}catch(e){return false;}}
+    btns.forEach(function(b){ if(seen(b.dataset.feature)) markDone(b); });  // 같은 세션이면 완료 상태 복원
+    btns.forEach(function(b){ b.addEventListener('click',function(){
+      var f=b.dataset.feature;
+      if(!seen(f)){
+        try{sessionStorage.setItem('petpy_click_'+f,'1');}catch(e){}
+        if(GAS){ fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body:JSON.stringify({sheet:'clicks',row:{feature:f,sid:sid(),created_at:new Date().toISOString()}})}).catch(function(){}); }
+      }
+      markDone(b);
+      toast('기대해 주셔서 감사해요! 베타에서 가장 먼저 알려드릴게요 💛');
+    }); });
   })();
 
   // ============ 방문 로깅 (Apps Script 'visits' 탭) ============
