@@ -347,7 +347,7 @@
       recEmptyHint.hidden = true;
       if (activePet && pets.indexOf(activePet) >= 0) {
         recForm.hidden = false;
-        recPrompt.innerHTML = "오늘 우리 <b>" + esc(activePet) + "</b>의 어떤 순간을 기록할까요?";
+        recPrompt.innerHTML = T("welcomeMsg").replace("{petName}", "<b>" + esc(activePet) + "</b>");
         loadAndRenderGrid();
       } else {
         recForm.hidden = true;
@@ -365,8 +365,8 @@
     }
 
     // ----- 사진 선택/미리보기 -----
-    function showPhoto(dataURL) { lastPreviewDataURL = dataURL; recPreviewImg.src = dataURL; recPreview.hidden = false; recPhotoBtn.textContent = "📸 다른 사진 선택"; }
-    function clearPhoto() { selectedFile = null; lastPreviewDataURL = null; if (recFile) recFile.value = ""; recPreviewImg.removeAttribute("src"); recPreview.hidden = true; recPhotoBtn.textContent = "📸 내 앨범에서 사진 선택"; }
+    function showPhoto(dataURL) { lastPreviewDataURL = dataURL; recPreviewImg.src = dataURL; recPreview.hidden = false; recPhotoBtn.textContent = "📸 " + T("uploadBtn"); }
+    function clearPhoto() { selectedFile = null; lastPreviewDataURL = null; if (recFile) recFile.value = ""; recPreviewImg.removeAttribute("src"); recPreview.hidden = true; recPhotoBtn.textContent = "📸 " + T("uploadBtn"); }
     function onFilePicked() {
       var f = recFile.files && recFile.files[0];
       if (!f) return;
@@ -429,7 +429,7 @@
         var row = { user_id: uid(), pet_name: activePet, image_url: imageUrl || "", memo: memo, created_at: nowISO() };
         var cache = lsRead(LS_MEM); cache.push(row); lsWrite(LS_MEM, cache);  // 낙관적 + 오프라인
         var done = function () {
-          recAddBtn.disabled = false; recAddBtn.textContent = "추억 등록하기";
+          recAddBtn.disabled = false; recAddBtn.textContent = T("submitBtn");
           clearPhoto(); recMemo.value = ""; setNote(recNote, "", true);
           showToast(activePet + "의 추억이 등록됐어요 🐾");
           loadAndRenderGrid();
@@ -488,6 +488,12 @@
     recFile.addEventListener("change", onFilePicked);
     recPhotoRemove.addEventListener("click", clearPhoto);
     recAddBtn.addEventListener("click", submitMemory);
+    // 언어 전환 시 동적 텍스트 갱신
+    window.addEventListener("petpy:lang", function () {
+      if (!selectedFile) recPhotoBtn.textContent = "📸 " + T("uploadBtn");
+      recAddBtn.textContent = T("submitBtn");
+      if (!recForm.hidden && activePet) recPrompt.innerHTML = T("welcomeMsg").replace("{petName}", "<b>" + esc(activePet) + "</b>");
+    });
 
     // 기억창구(AR) 모듈이 현재 유저의 추억을 가져가도록 노출 (라이브 참조)
     window.PETPY = window.PETPY || {};
@@ -613,14 +619,14 @@
       lastPreviewDataURL = dataURL;
       pPreviewImg.src = dataURL;
       pPreview.hidden = false;
-      pPhotoBtn.textContent = "📸 다른 사진 선택";
+      pPhotoBtn.textContent = "📸 " + T("uploadBtn");
     }
     function clearPhoto() {
       selectedFile = null; lastPreviewDataURL = null;
       if (pFile) pFile.value = "";
       pPreviewImg.removeAttribute("src");
       pPreview.hidden = true;
-      pPhotoBtn.textContent = "📸 내 앨범에서 사진 선택";
+      pPhotoBtn.textContent = "📸 " + T("uploadBtn");
     }
     function onFilePicked() {
       var f = pFile.files && pFile.files[0];
@@ -653,7 +659,7 @@
         var row = { post_id: String(Date.now()), user_id: uid(), content: content, image_url: imageUrl || "", created_at: nowISO() };
         var cache = lsRead(LS_POSTS); cache.push(row); lsWrite(LS_POSTS, cache);  // 낙관적 + 오프라인
         var done = function () {
-          pSubmit.disabled = false; pSubmit.textContent = "등록하기";
+          pSubmit.disabled = false; pSubmit.textContent = T("submitBtn");
           closeWrite();
           showToast("동네에 글을 남겼어요 🐾");
           refresh();
@@ -733,6 +739,11 @@
     document.getElementById("postClose").addEventListener("click", closeWrite);
     document.getElementById("postCancel").addEventListener("click", closeWrite);
     pSubmit.addEventListener("click", submitPost);
+    // 언어 전환 시 글쓰기 모달 동적 텍스트 갱신
+    window.addEventListener("petpy:lang", function () {
+      if (!selectedFile) pPhotoBtn.textContent = "📸 " + T("uploadBtn");
+      pSubmit.textContent = T("submitBtn");
+    });
     pModal.addEventListener("click", function (e) { if (e.target === pModal) closeWrite(); });
     if (pPhotoBtn) pPhotoBtn.addEventListener("click", function () { pFile.click(); });
     if (pFile) pFile.addEventListener("change", onFilePicked);

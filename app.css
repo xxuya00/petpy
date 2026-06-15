@@ -175,6 +175,13 @@ button{font-family:inherit}
   max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .id-chip .copy-ic{font-size:13px;opacity:.7;flex-shrink:0}
 
+/* ---------- 언어 셀렉터(헤더 + 온보딩) ---------- */
+.top-right{display:flex;align-items:center;gap:8px}
+.lang-select{font-family:'Quicksand';font-weight:600;font-size:12px;color:var(--ink);
+  background:var(--white);border:1px solid rgba(58,50,43,.12);border-radius:100px;
+  padding:6px 9px;cursor:pointer;outline:none;box-shadow:0 3px 10px var(--shadow)}
+.onb-lang{position:absolute;top:18px;right:18px;z-index:5}
+
 /* ---------- 복사 토스트 ---------- */
 .toast{position:absolute;left:50%;top:64px;transform:translate(-50%,-8px);
   background:var(--ink);color:var(--cream);font-size:13px;font-weight:500;
