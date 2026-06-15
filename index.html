@@ -23,7 +23,7 @@
 <header class="hero">
   <div class="eyebrow display">반려동물 기록 · 기억 커뮤니티</div>
   <h1><span class="swap"><span class="swap-word" id="swapWord">기록이</span></span> 되는 곳,<br><b>petpy</b></h1>
-  <p class="sub serif-ko">매일의 작은 순간을 기록하면, 그 기록이 영원히 사라지지 않는 기억이 됩니다.</p>
+  <p class="sub serif-ko">매일의 작은 순간을 기록하면,<br>그 기록이 영원히 사라지지 않는 기억이 됩니다.</p>
   <button class="btn-primary" onclick="location.href='app.html'">앱 체험하기</button>
   <div class="scroll-hint display"><span>SCROLL</span><span class="dot"></span></div>
 </header>
@@ -34,23 +34,36 @@
     <div class="text">
       <div class="eyebrow-tag display"><span class="num">1</span>기록하기</div>
       <h2>오늘 이 아이의 하루를,<br>한 장면도 놓치지 않게.</h2>
-      <p class="body">밥 먹는 모습, 첫 산책, 나를 반기던 그 눈빛까지. 사진과 영상을 날짜별로 남기면 petpy가 우리 아이만의 타임라인을 만들어 줍니다.</p>
+      <p class="body">밥 먹는 모습, 첫 산책, 나를 반기던 그 눈빛까지.<br>사진과 영상을 날짜별로 남기면<br>petpy가 우리 아이만의 타임라인을 만들어 줍니다.</p>
     </div>
     <div class="phone-holder">
       <div class="phone"><div class="screen">
-        <div class="m-feed">
+        <div class="m-feed" id="recMock">
           <div class="m-top">
             <div class="ftitle">🐾 우리집 기록</div>
-            <div class="fsub">함께한 모든 순간 · 사진 327장</div>
+            <div class="fsub">함께한 모든 순간 · 사진 <span id="recCount">327</span>장</div>
             <div class="m-chips">
               <span class="chip on">뭉이</span><span class="chip">보리</span><span class="chip">나비</span><span class="chip add">＋</span>
             </div>
           </div>
-          <div class="m-grid">
+          <div class="m-grid" id="recGrid">
+            <div class="gcard up-slot" id="upSlot">
+              <div class="up-empty"><span class="ic">📸</span><span class="t">사진 추가</span></div>
+              <img class="up-img" alt="">
+              <div class="up-prog"><i></i></div>
+              <div class="gcap up-cap"><b></b><span></span></div>
+              <div class="up-badge">방금</div>
+            </div>
             <div class="gcard"><img src="images/1.png" alt=""><div class="gcap"><b>뭉이</b>초롱초롱 눈맞춤</div></div>
             <div class="gcard"><img src="images/2.png" alt=""><div class="gcap"><b>보리</b>산책 가자! 🐾</div></div>
-            <div class="gcard"><img src="images/3.png" alt=""><div class="gcap"><b>뭉이</b>햇살 좋은 오후</div></div>
             <div class="gcard"><img src="images/4.png" alt=""><div class="gcap"><b>나비</b>책장 탐험 중</div></div>
+          </div>
+          <div class="m-composer" id="recComposer">
+            <div class="cmp-row">
+              <span class="cmp-ic">✏️</span>
+              <div class="cmp-input"><span class="cmp-text cmp-ph" id="recTyped">추억 캡션 적기 (예: 오늘 산책 최고였어!)</span><span class="cmp-cur"></span></div>
+            </div>
+            <button class="cmp-btn" id="recBtn" type="button">추억 등록하기</button>
           </div>
           <div class="m-tab">
             <div class="mt on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span>기록</span></div>
@@ -95,9 +108,8 @@
     <div class="text">
       <div class="eyebrow-tag display" style="color:#9d7fc4"><span class="num">2</span>기억하기</div>
       <h2>곁에 없어도,<br>다시 부를 수 있도록.</h2>
-      <p class="body">언젠가 이별의 순간이 와도, 기록은 사라지지 않습니다. 늘 함께였던 그 자리에 휴대폰을 비추면, AR로 다시 만날 수 있어요.</p>
-      <p class="body" style="margin-top:14px;font-weight:600;color:#9d7fc4">✦ petpy의 핵심 기능 · 베타에서 가장 먼저 체험하세요</p>
-      <button class="btn-primary" onclick="location.href='app.html'" style="margin-top:18px">기억하기 체험 →</button>
+      <p class="body">언젠가 이별의 순간이 와도, 기록은 사라지지 않습니다.<br>늘 함께였던 그 자리에 휴대폰을 비추면, AR로 다시 만날 수 있어요.</p>
+      <p class="body" style="margin-top:16px;font-weight:600"><a href="app.html" class="core-link">✦ petpy의 핵심 기능 · 베타에서 가장 먼저 체험하세요 →</a></p>
     </div>
   </div>
 </section>
@@ -112,23 +124,15 @@
     </div>
     <div class="phone-holder">
       <div class="phone"><div class="screen">
-        <div class="m-comm">
+        <div class="m-comm" id="commMock">
           <div class="ctop">🏡 우리동네 댕댕이<span class="badge">동네인증 완료</span></div>
           <div class="cfeed">
-            <div class="cpost">
-              <div class="ph"><span class="pa">초코맘 · 도보 3분</span><span class="pt">방금</span></div>
-              <div class="pb">오늘 저녁 7시에 같이 산책하실 분 계세요? 🐕</div>
-              <div class="pcmt"><b>두부아빠</b> 저요! 두부도 친구 필요했어요 ㅎㅎ</div>
-            </div>
-            <div class="cpost">
-              <div class="ph"><span class="pa">레오파파 · 도보 4분</span><span class="pt">12분 전</span></div>
-              <div class="pb">우리 동네 야간 진료 되는 병원 있을까요? 😢</div>
-              <div class="pcmt"><b>몽이언니</b> 사거리 '행복동물병원' 9시까지 해요!</div>
-            </div>
-            <div class="cpost">
-              <div class="ph"><span class="pa">보리맘 · 도보 6분</span><span class="pt">1시간 전</span></div>
-              <div class="pb">소화 약한 강아지 간식 추천 받아요 🤔</div>
-              <div class="pcmt"><b>콩이님</b> 동결건조 닭가슴살 강추! 치석에도 좋아요 🍗</div>
+            <div class="cpost" id="cPost">
+              <div class="ph"><span class="pa" id="cAuthor">초코맘 · 도보 3분</span><span class="pt">방금</span></div>
+              <div class="cphoto" id="cPhoto"><img alt=""></div>
+              <div class="pb" id="cBody"></div>
+              <div class="ccmts" id="cCmts"></div>
+              <div class="ctyping off" id="cTyping"><span class="cwho" id="cTypingWho"></span><span class="cdots"><i></i><i></i><i></i></span></div>
             </div>
           </div>
           <div class="m-tab">
@@ -154,6 +158,7 @@
       <button onclick="submitBeta()">베타 신청</button>
     </div>
     <div class="beta-msg" id="betaMsg"></div>
+    <div class="beta-perk">🎁 베타 출시 때, 이메일을 남겨주신 분들 중 <b>추첨을 통해 ‘AR 다시 만나기’ 무료 체험권 3회</b>를 드려요.</div>
     <div class="beta-contact" style="margin-top:22px;font-size:14px;color:#6B6055">
       문의 · 제휴는 <a href="mailto:pbw0511@yonsei.ac.kr" style="color:#9d7fc4;font-weight:700;text-decoration:none">pbw0511@yonsei.ac.kr</a> 으로 편하게 연락 주세요.
     </div>

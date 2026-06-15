@@ -1,72 +1,160 @@
-  // 소통하기: 3개 시나리오 자동 재생 (산책 → 병원 찾기 → 간식 추천)
+  // ============ 소통하기: 글 작성 → 게시 → 이웃 댓글 시나리오 애니메이션 ============
+  // 실제 앱 흐름(동네 글 올리기 → 댓글 달기)을 4개 시나리오로 순서대로 반복:
+  //   ① 산책메이트 찾기 ② 야간병원 찾기 ③ 간식 추천 ④ 미용 자랑(사진 첨부)
+  // #connect(소통 목업)가 화면에 보일 때 시작.
   (function(){
+    const mock=document.getElementById('commMock');
+    if(!mock) return;
+    const post=document.getElementById('cPost');
+    const author=document.getElementById('cAuthor');
+    const photo=document.getElementById('cPhoto');
+    const photoImg=photo.querySelector('img');
+    const body=document.getElementById('cBody');
+    const cmts=document.getElementById('cCmts');
+    const typing=document.getElementById('cTyping');
+    const typingWho=document.getElementById('cTypingWho');
     const scenes=[
-      {tag:'산책 메이트 찾기', msgs:[
-        {who:'초코맘 · 도보 3분', side:'them', t:'오늘 저녁 7시에 같이 산책하실 분 계세요? 🐕'},
-        {who:'두부아빠 · 도보 5분', side:'them', t:'저요! 두부도 친구 필요했는데 좋아요 ㅎㅎ'},
-        {side:'me', t:'콩이도 갈게요! 공원 입구에서 봬요 🙌'},
-        {who:'초코맘 · 도보 3분', side:'them', t:'완전 좋아요~ 이따 봬요! 💛'},
+      {author:'초코맘 · 도보 3분', post:'오늘 저녁 7시에 같이 산책하실 분 계세요? 🐕', photo:null, comments:[
+        {who:'두부아빠', t:'저요! 두부도 친구 필요했어요 ㅎㅎ'},
+        {who:'콩이맘', t:'콩이도 갈게요! 공원 입구에서 봬요 🙌'},
       ]},
-      {tag:'동물병원 찾기', msgs:[
-        {side:'me', t:'우리 동네 야간 진료 되는 병원 있을까요? 😢'},
-        {who:'몽이언니 · 도보 8분', side:'them', t:'사거리 \'행복동물병원\' 9시까지 해요! 친절하세요'},
-        {who:'레오파파 · 도보 4분', side:'them', t:'맞아요 거기 응급도 잘 봐주셔서 추천이요 🏥'},
-        {side:'me', t:'감사해요 ㅠㅠ 지금 바로 가볼게요!'},
+      {author:'레오파파 · 도보 4분', post:'우리 동네 야간 진료 되는 병원 있을까요? 😢', photo:null, comments:[
+        {who:'몽이언니', t:"사거리 '행복동물병원' 9시까지 해요!"},
+        {who:'토리맘', t:'거기 응급도 잘 봐주셔서 추천이요 🏥'},
       ]},
-      {tag:'간식 추천', msgs:[
-        {who:'보리맘 · 도보 6분', side:'them', t:'소화 약한 강아지 간식 뭐 주시나요? 🤔'},
-        {side:'me', t:'저흰 동결건조 닭가슴살이요! 콩이 환장해요 🍗'},
-        {who:'두부아빠 · 도보 5분', side:'them', t:'오 그거 좋죠~ 치석에도 도움돼요 👍'},
-        {who:'보리맘 · 도보 6분', side:'them', t:'오늘 바로 주문할게요 고마워요! 🥹'},
+      {author:'보리맘 · 도보 6분', post:'소화 약한 강아지 간식 추천 받아요 🤔', photo:null, comments:[
+        {who:'콩이님', t:'동결건조 닭가슴살 강추! 치석에도 좋아요 🍗'},
+        {who:'두부아빠', t:'우리도 그거 먹어요~ 소화 잘돼요 👍'},
+      ]},
+      {author:'초코맘 · 도보 3분', post:'우리 초코 미용했어요 ✂️ 너무 귀엽죠? ☺️', photo:'images/2.png', comments:[
+        {who:'몽이언니', t:'헉 인형인 줄… 너무 귀여워요 🥹'},
+        {who:'레오파파', t:'미용 어디서 하셨어요? 정보 공유 좀요 🙏'},
       ]},
     ];
-    const body=document.getElementById('chatbody');
-    const tag=document.getElementById('sceneTag');
-    const typing=document.getElementById('typingDots');
-    if(!body||!tag||!typing) return;  // 소통 목업이 게시글+댓글 피드로 바뀌어 채팅 요소 없음 → 무동작
     let started=false;
-
-    function bubble(m){
-      const d=document.createElement('div');
-      d.className='bubble '+m.side;
-      d.innerHTML=(m.who?`<div class="who">${m.who}</div>`:'')+m.t;
-      body.appendChild(d);
-      body.scrollTop=body.scrollHeight;
+    const wait=ms=>new Promise(r=>setTimeout(r,ms));
+    function loadImg(src){return new Promise(res=>{photoImg.onload=res;photoImg.onerror=res;photoImg.src=src;});}
+    async function typeBody(text){
+      body.innerHTML='<span class="cur"></span>';
+      const cur=body.querySelector('.cur');
+      for(const ch of Array.from(text)){cur.insertAdjacentText('beforebegin',ch);await wait(55);}
+      await wait(450);cur.remove();
     }
-    function clear(){body.innerHTML='';}
-
-    async function wait(ms){return new Promise(r=>setTimeout(r,ms));}
-    async function playScene(s){
-      tag.style.opacity=0;
+    async function scene(s){
+      // 리셋
+      post.classList.remove('in');
+      cmts.innerHTML='';body.textContent='';typing.classList.add('off');photo.classList.remove('show');
       await wait(350);
-      tag.textContent=s.tag;tag.style.opacity=1;
-      clear();
-      for(const m of s.msgs){
+      author.textContent=s.author;
+      if(s.photo){await loadImg(s.photo);photo.classList.add('show');}
+      // 글 게시(슬라이드 인)
+      post.classList.add('in');
+      await wait(320);
+      // 본문 작성(타이핑)
+      await typeBody(s.post);
+      await wait(500);
+      // 이웃 댓글 하나씩(입력중 → 등록)
+      for(const c of s.comments){
+        typingWho.textContent=c.who+'님이 입력 중';
         typing.classList.remove('off');
-        await wait(900);
-        typing.classList.add('off');
-        bubble(m);
         await wait(1100);
+        typing.classList.add('off');
+        const d=document.createElement('div');
+        d.className='ccmt';
+        d.innerHTML='<b></b>';
+        d.querySelector('b').textContent=c.who;
+        d.appendChild(document.createTextNode(c.t));
+        cmts.appendChild(d);
+        await wait(950);
       }
-      await wait(2200); // 시나리오 끝나고 잠시 멈춤
+      await wait(2400); // 시나리오 끝나고 잠시 멈춤
     }
-    async function loop(){
-      let i=0;
-      while(true){await playScene(scenes[i]);i=(i+1)%scenes.length;}
-    }
-    // 소통 섹션이 화면에 보일 때 시작
-    const co=new IntersectionObserver((es)=>{es.forEach(e=>{
+    async function loop(){let i=0;while(started){await scene(scenes[i]);i=(i+1)%scenes.length;}}
+    const io=new IntersectionObserver((es)=>es.forEach(e=>{
       if(e.isIntersecting && !started){started=true;loop();}
-    })},{threshold:.3});
-    co.observe(document.getElementById('connect'));
+    }),{threshold:.3});
+    io.observe(mock);
   })();
 
-  // hero word swap: 기록이 ↔ 기억이 (텍스트가 사라진 순간에 교체)
+  // hero word swap: 기록이 ↔ 기억이 — CSS 페이드 한 사이클이 끝나는(글자가 안 보이는) 순간에만 교체.
+  // setInterval 대신 animationiteration에 묶어, 양방향(기록이→기억이, 기억이→기록이) 모두
+  // '페이드아웃 → 교체 → 페이드인'으로 동일하게 흐르게 함(예전엔 한쪽이 보이는 채로 톡 바뀌어 어색했음).
   (function(){
     const el=document.getElementById('swapWord');
+    if(!el) return;
     const words=['기록이','기억이'];let i=0;
-    // 5s cycle, 단어 안 보이는 ~50% 지점(2.5s)에서 교체
-    setInterval(()=>{i=(i+1)%words.length;el.textContent=words[i];},2500);
+    el.addEventListener('animationiteration',()=>{i=(i+1)%words.length;el.textContent=words[i];});
+  })();
+
+  // ============ 기록하기 업로드 데모 애니메이션 ============
+  // 실제 앱 흐름 재현: 사진 선택(슬롯 채움) → 캡션 타이핑 → '추억 등록하기' → 업로드 진행 → 카드 완성(방금·327→328) → 리셋 반복.
+  // #record 가 화면에 보일 때 시작(소통 섹션과 동일 패턴).
+  (function(){
+    const mock=document.getElementById('recMock');
+    if(!mock) return;
+    const slot=document.getElementById('upSlot');
+    const img=slot.querySelector('.up-img');
+    const capB=slot.querySelector('.up-cap b');
+    const capS=slot.querySelector('.up-cap span');
+    const cmp=document.getElementById('recComposer');
+    const typed=document.getElementById('recTyped');
+    const btn=document.getElementById('recBtn');
+    const cnt=document.getElementById('recCount');
+    const PH='추억 캡션 적기 (예: 오늘 산책 최고였어!)';
+    const BASE=327;
+    // 업로드 슬롯 전용 사진은 그리드 base 카드(images/1·2·4)에 없는 images/3 → 화면에 같은 사진이 중복돼 보이지 않음
+    const UP_IMG='images/3.png', UP_PET='뭉이';
+    const caps=['햇살 아래 단잠 😴','오늘의 간식 타임 🍖','창밖 구경 삼매경 🐶','산책 다녀왔어요 🐾'];
+    const items=caps.map(c=>({img:UP_IMG,pet:UP_PET,cap:c}));
+    let idx=0,started=false;
+    const wait=ms=>new Promise(r=>setTimeout(r,ms));
+
+    function reset(){
+      slot.classList.remove('filled','uploading','done');
+      img.removeAttribute('src');
+      capB.textContent='';capS.textContent='';
+      typed.textContent=PH;typed.classList.add('cmp-ph');
+      cmp.classList.remove('up');btn.classList.remove('press');
+      cnt.textContent=BASE;
+    }
+    async function typeOut(text){
+      typed.classList.remove('cmp-ph');typed.textContent='';
+      for(const ch of Array.from(text)){typed.textContent+=ch;await wait(85);}
+    }
+    function loadImg(src){return new Promise(res=>{img.onload=res;img.onerror=res;img.src=src;});}
+
+    async function cycle(){
+      const it=items[idx%items.length];idx++;
+      reset();
+      await wait(750);
+      // 1) 앨범에서 사진 선택 → 슬롯 채움
+      await loadImg(it.img);
+      slot.classList.add('filled');
+      await wait(650);
+      // 2) 작성 시트 올라오고 캡션 타이핑
+      cmp.classList.add('up');
+      await wait(460);
+      await typeOut(it.cap);
+      await wait(520);
+      // 3) '추억 등록하기' 누름
+      btn.classList.add('press');await wait(160);btn.classList.remove('press');
+      await wait(140);
+      // 4) 시트 내려가고 업로드 진행(사진 위 진행바)
+      cmp.classList.remove('up');
+      await wait(360);
+      slot.classList.add('uploading');
+      await wait(960);
+      // 5) 완료 — 캡션/방금 뱃지/카운트
+      capB.textContent=it.pet;capS.textContent=it.cap;
+      slot.classList.remove('uploading');slot.classList.add('done');
+      cnt.textContent=BASE+1;
+      await wait(2600);
+    }
+    async function loop(){while(started){await cycle();}}
+    const io=new IntersectionObserver((es)=>es.forEach(e=>{
+      if(e.isIntersecting&&!started){started=true;reset();loop();}
+    }),{threshold:.3});
+    io.observe(mock);
   })();
   // AR: 영상 파일(ar_reunion.mp4)이 로드되면 영상 표시, 없으면 플레이스홀더 연출 유지
   (function(){
