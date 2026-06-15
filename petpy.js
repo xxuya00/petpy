@@ -23,6 +23,7 @@
     const body=document.getElementById('chatbody');
     const tag=document.getElementById('sceneTag');
     const typing=document.getElementById('typingDots');
+    if(!body||!tag||!typing) return;  // 소통 목업이 게시글+댓글 피드로 바뀌어 채팅 요소 없음 → 무동작
     let started=false;
 
     function bubble(m){

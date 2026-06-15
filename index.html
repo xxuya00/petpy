@@ -16,10 +16,7 @@
     <svg class="paw" viewBox="0 0 32 32" fill="none"><ellipse cx="9" cy="11" rx="3.2" ry="4.2" fill="#E8A04C"/><ellipse cx="16" cy="8.5" rx="3.4" ry="4.6" fill="#E8A04C"/><ellipse cx="23" cy="11" rx="3.2" ry="4.2" fill="#E8A04C"/><path d="M16 15c-4.4 0-8 3-8 6.4 0 2.6 2.2 4.1 5 4.1 1.3 0 2-.5 3-.5s1.7.5 3 .5c2.8 0 5-1.5 5-4.1C27 18 23.4 15 19 15h-3z" fill="#E8A04C"/></svg>
     petpy
   </div>
-  <div style="display:flex;gap:9px;align-items:center">
-    <button class="cta-mini" onclick="document.getElementById('beta').scrollIntoView()">베타 신청</button>
-    <button class="cta-mini" onclick="location.href='app.html'" style="background:#E8A04C;color:#fff;border-color:#E8A04C">체험하기</button>
-  </div>
+  <button class="cta-mini" onclick="document.getElementById('beta').scrollIntoView()">베타 신청</button>
 </nav>
 
 <!-- HERO -->
@@ -27,8 +24,7 @@
   <div class="eyebrow display">반려동물 기록 · 기억 커뮤니티</div>
   <h1><span class="swap"><span class="swap-word" id="swapWord">기록이</span></span> 되는 곳,<br><b>petpy</b></h1>
   <p class="sub serif-ko">매일의 작은 순간을 기록하면, 그 기록이 영원히 사라지지 않는 기억이 됩니다.</p>
-  <button class="btn-primary" onclick="document.getElementById('beta').scrollIntoView()">가장 먼저 만나보기</button>
-  <button class="btn-primary" onclick="location.href='app.html'" style="margin-left:10px;background:transparent;border:1.5px solid #E8A04C;color:#E8A04C;box-shadow:none">✨ 앱 체험하기</button>
+  <button class="btn-primary" onclick="location.href='app.html'">앱 체험하기</button>
   <div class="scroll-hint display"><span>SCROLL</span><span class="dot"></span></div>
 </header>
 
@@ -44,28 +40,22 @@
       <div class="phone"><div class="screen">
         <div class="m-feed">
           <div class="m-top">
-            <div class="ftitle">🐾 콩이의 기록</div>
-            <div class="fsub">함께한 지 1,284일째 · 사진 327장</div>
+            <div class="ftitle">🐾 우리집 기록</div>
+            <div class="fsub">함께한 모든 순간 · 사진 327장</div>
+            <div class="m-chips">
+              <span class="chip on">뭉이</span><span class="chip">보리</span><span class="chip">나비</span><span class="chip add">＋</span>
+            </div>
           </div>
-          <div class="m-cards">
-            <div class="fcard">
-              <div class="img photo-snack">
-                <div class="date display">오늘</div></div>
-              <div class="cap"><span class="heart">♥</span> 간식 먹고 행복해하는 중</div>
-            </div>
-            <div class="fcard">
-              <div class="img photo-walk">
-                <div class="date display">어제</div></div>
-              <div class="cap"><span class="heart">♥</span> 햇살 좋은 날의 산책</div>
-            </div>
-            <div class="fcard">
-              <div class="img photo-sleep">
-                <div class="date display">3일 전</div></div>
-              <div class="cap"><span class="heart">♥</span> 낮잠 자는 얼굴</div>
-            </div>
+          <div class="m-grid">
+            <div class="gcard"><img src="images/1.png" alt=""><div class="gcap"><b>뭉이</b>초롱초롱 눈맞춤</div></div>
+            <div class="gcard"><img src="images/2.png" alt=""><div class="gcap"><b>보리</b>산책 가자! 🐾</div></div>
+            <div class="gcard"><img src="images/3.png" alt=""><div class="gcap"><b>뭉이</b>햇살 좋은 오후</div></div>
+            <div class="gcard"><img src="images/4.png" alt=""><div class="gcap"><b>나비</b>책장 탐험 중</div></div>
           </div>
           <div class="m-tab">
-            <span class="active" title="기록"></span><span title="기억"></span><span title="소통"></span><span title="내 정보"></span>
+            <div class="mt on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span>기록</span></div>
+            <div class="mt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span>기억</span></div>
+            <div class="mt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>소통</span></div>
           </div>
         </div>
       </div></div>
@@ -107,7 +97,7 @@
       <h2>곁에 없어도,<br>다시 부를 수 있도록.</h2>
       <p class="body">언젠가 이별의 순간이 와도, 기록은 사라지지 않습니다. 늘 함께였던 그 자리에 휴대폰을 비추면, AR로 다시 만날 수 있어요.</p>
       <p class="body" style="margin-top:14px;font-weight:600;color:#9d7fc4">✦ petpy의 핵심 기능 · 베타에서 가장 먼저 체험하세요</p>
-      <button class="mg-cta" onclick="openMemorial()">✦ 메모리얼 가든 체험하기</button>
+      <button class="btn-primary" onclick="location.href='app.html'" style="margin-top:18px">기억하기 체험 →</button>
     </div>
   </div>
 </section>
@@ -122,11 +112,30 @@
     </div>
     <div class="phone-holder">
       <div class="phone"><div class="screen">
-        <div class="m-chat">
+        <div class="m-comm">
           <div class="ctop">🏡 우리동네 댕댕이<span class="badge">동네인증 완료</span></div>
-          <div class="scene-tag display" id="sceneTag">산책 메이트 찾기</div>
-          <div class="cbody" id="chatbody"></div>
-          <div class="typing" id="typingDots"><span></span><span></span><span></span></div>
+          <div class="cfeed">
+            <div class="cpost">
+              <div class="ph"><span class="pa">초코맘 · 도보 3분</span><span class="pt">방금</span></div>
+              <div class="pb">오늘 저녁 7시에 같이 산책하실 분 계세요? 🐕</div>
+              <div class="pcmt"><b>두부아빠</b> 저요! 두부도 친구 필요했어요 ㅎㅎ</div>
+            </div>
+            <div class="cpost">
+              <div class="ph"><span class="pa">레오파파 · 도보 4분</span><span class="pt">12분 전</span></div>
+              <div class="pb">우리 동네 야간 진료 되는 병원 있을까요? 😢</div>
+              <div class="pcmt"><b>몽이언니</b> 사거리 '행복동물병원' 9시까지 해요!</div>
+            </div>
+            <div class="cpost">
+              <div class="ph"><span class="pa">보리맘 · 도보 6분</span><span class="pt">1시간 전</span></div>
+              <div class="pb">소화 약한 강아지 간식 추천 받아요 🤔</div>
+              <div class="pcmt"><b>콩이님</b> 동결건조 닭가슴살 강추! 치석에도 좋아요 🍗</div>
+            </div>
+          </div>
+          <div class="m-tab">
+            <div class="mt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span>기록</span></div>
+            <div class="mt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span>기억</span></div>
+            <div class="mt on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>소통</span></div>
+          </div>
         </div>
       </div></div>
     </div>
@@ -159,48 +168,7 @@
   기록이 기억이 되도록 · SW·AI 비즈니스 응용설계 프로젝트
 </footer>
 
-<!-- Memorial Garden 체험 모달 (코어 기능 데모) -->
-<div class="mg-overlay" id="mgOverlay" aria-hidden="true">
-  <div class="mg-modal" role="dialog" aria-modal="true" aria-label="메모리얼 가든 체험">
-    <button class="mg-close" id="mgClose" aria-label="닫기">&times;</button>
-    <div class="mg-head">
-      <div class="k display">Memorial Garden</div>
-      <h3>다시 만나는 순간</h3>
-      <p>떠나보낸 아이의 사진을 올리면, AI가 배경을 분리해 곁으로 데려와요.</p>
-    </div>
-    <div class="mg-stage">
-      <div class="scene-glow"></div><div class="floor"></div>
-      <div class="mg-particles">
-        <span style="left:36%;animation-delay:0s"></span>
-        <span style="left:54%;animation-delay:1.4s"></span>
-        <span style="left:46%;animation-delay:2.6s"></span>
-        <span style="left:62%;animation-delay:3.4s"></span>
-        <span style="left:42%;animation-delay:4.2s"></span>
-      </div>
-      <div class="mg-empty" id="mgEmpty">사진을 올리면<br>이 자리에 다시 나타나요</div>
-      <img class="mg-cutout" id="mgCutout" alt="">
-      <video class="mg-video" id="mgVideo" loop muted playsinline poster=""><source src="ar_reunion.mp4" type="video/mp4"></video>
-      <div class="mg-spinner" id="mgSpinner"><div><div class="ring"></div>AI가 배경을 분리하는 중…</div></div>
-      <div class="mg-cap" id="mgCap"></div>
-    </div>
-    <div class="mg-body">
-      <div class="mg-drop" id="mgDrop">
-        <div class="ic">🐾</div>
-        <div class="t display">사진 올리기</div>
-        <div class="s">클릭하거나 사진을 끌어다 놓으세요</div>
-      </div>
-      <input type="file" id="mgFile" accept="image/*" hidden>
-      <div class="mg-row">
-        <button class="mg-btn primary" id="mgAnimate" disabled>움직이는 모습 보기 ▶</button>
-      </div>
-      <div class="mg-msgwrap" id="mgMsgWrap">
-        <textarea id="mgMsg" rows="2" placeholder="남기고 싶은 한마디를 적어주세요"></textarea>
-        <div class="mg-row"><button class="mg-btn ghost" id="mgSave">메시지 남기기</button></div>
-      </div>
-      <div class="mg-note" id="mgNote"></div>
-    </div>
-  </div>
-</div>
+<!-- (메모리얼 가든 체험 모달은 웹앱 app.html 기억창구로 이동 — 랜딩에서는 제거) -->
 
 <!-- 백엔드 주소: 데모는 로컬 실행 권장. 비우면("") 백엔드 없이 데모 폴백으로 동작 -->
 <!-- 공통 설정(PETPY_API · PETPY_GAS) — app.html과 동일한 config.js 공유 -->
