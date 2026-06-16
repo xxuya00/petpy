@@ -5,6 +5,7 @@
  * 기록창구에 등록된 사진 → Replicate 배경분리(컷아웃, 투명 PNG) → 빌보드 평면 텍스처.
  * 백엔드 미연결/실패/보안정책 시 원본 이미지를 그대로 3D 카드로 폴백.
  * 바이올렛 파티클 상승 + localStorage(petpy.memorial.msgs) 추모 자막 + 호흡 애니.
+ * 추모글·소환(누끼) 실사용은 구글시트 memorial 탭에도 fire-and-forget 적재(데모면 자동 생략).
  * AI 3D 업그레이드는 이메일 수집 페이크도어.
  */
 import * as THREE from "three";
@@ -38,6 +39,23 @@ function initAR(panel) {
   const msgSave = panel.querySelector("#arMsgSave");
 
   function setStatus(t) { if (statusEl) statusEl.textContent = t; }
+
+  /* ---------------- 기억하기 실사용 로깅(구글시트 memorial 탭) ----------------
+   * 헤더: user_id | pet_name | type | message | source | result | created_at
+   * type=message(추모글) / type=summon(소환·누끼; result=cutout|fallback|demo|original|load_fail)
+   * fire-and-forget — 데모 모드(PETPY_GAS 미설정)면 saveRow가 자동 생략. */
+  let lastPet = "";
+  function logMemorial(row) {
+    try {
+      if (!(window.PETPY && window.PETPY.saveRow)) return;
+      const base = {
+        user_id: localStorage.getItem("petpy_user_id") || "",
+        pet_name: "", type: "", message: "", source: "", result: "",
+        created_at: window.PETPY_now()
+      };
+      window.PETPY.saveRow("memorial", Object.assign(base, row));
+    } catch (e) {}
+  }
 
   /* ---------------- Three.js 기본 세팅 ---------------- */
   const R = 3.3; // 카메라 궤도 반지름
@@ -251,24 +269,28 @@ function initAR(panel) {
   async function summonFile(file) {
     if (!file.type || file.type.indexOf("image/") !== 0) { setStatus("이미지 파일을 올려주세요."); return; }
     const dataURL = await readDataURL(file);
-    await summon(dataURL, true);
+    lastPet = "";
+    await summon(dataURL, true, { source: "upload", pet_name: "" });
   }
   // 기록 사진(URL) → dataURL 변환 시도 후 컷아웃, 실패 시 원본 URL 카드로 폴백
   async function summonRecord(rec) {
     if (!rec || !rec.img) return;
+    lastPet = rec.name || "";
     if (emptyEl) emptyEl.style.display = "none";
     let dataURL = null;
     if (API) {
       setStatus("사진을 불러오는 중…");
       try { dataURL = await urlToDataURL(rec.img); } catch (e) { dataURL = null; }
     }
-    if (dataURL) await summon(dataURL, true);
-    else await summonUrlOnly(rec.img);
+    const meta = { source: "record", pet_name: rec.name || "" };
+    if (dataURL) await summon(dataURL, true, meta);
+    else await summonUrlOnly(rec.img, meta);
   }
 
-  async function summon(dataURL, canCutout) {
+  async function summon(dataURL, canCutout, meta) {
+    meta = meta || { source: "upload", pet_name: lastPet };
     if (emptyEl) emptyEl.style.display = "none";
-    let shown = dataURL;
+    let shown = dataURL, result;
     if (API && canCutout) {
       if (spinner) spinner.classList.add("on");
       setStatus("AI가 배경을 분리하는 중…");
@@ -279,24 +301,29 @@ function initAR(panel) {
           body: JSON.stringify({ image: dataURL })
         });
         const j = await r.json().catch(function () { return {}; });
-        if (r.ok && j.image) { shown = j.image; setStatus("AI 배경 분리 완료 · 다시, 늘 있던 그 자리에서"); }
+        if (r.ok && j.image) { shown = j.image; result = "cutout"; setStatus("AI 배경 분리 완료 · 다시, 늘 있던 그 자리에서"); }
         else throw new Error(j.error || "HTTP " + r.status);
       } catch (e) {
+        result = "fallback";
         setStatus("백엔드 미연결 — 원본으로 보여드려요 (데모 폴백)");
       } finally {
         if (spinner) spinner.classList.remove("on");
       }
     } else {
+      result = "demo";
       setStatus(API ? "원본으로 보여드려요 (데모 폴백)" : "데모 모드 — 백엔드 연결 시 AI가 배경을 분리해요");
     }
     const ok = await setCutoutTexture(shown);
     if (!ok) setStatus("이미지를 불러오지 못했어요. 다른 사진을 올려주세요.");
+    logMemorial({ pet_name: meta.pet_name, type: "summon", source: meta.source, result: ok ? result : "load_fail" });
   }
-  async function summonUrlOnly(url) {
+  async function summonUrlOnly(url, meta) {
+    meta = meta || { source: "record", pet_name: lastPet };
     if (emptyEl) emptyEl.style.display = "none";
     setStatus("원본 사진으로 보여드려요");
     const ok = await setCutoutTexture(url);
     if (!ok) setStatus("이 사진은 보안 정책으로 불러올 수 없어요. 사진을 직접 올려보세요.");
+    logMemorial({ pet_name: meta.pet_name, type: "summon", source: meta.source, result: ok ? "original" : "load_fail" });
   }
 
   /* ---------------- 추모 자막(localStorage) ---------------- */
@@ -332,6 +359,7 @@ function initAR(panel) {
       arr.push({ t: v, ts: Date.now() });
       localStorage.setItem(MSG_KEY, JSON.stringify(arr));
     } catch (e) {}
+    logMemorial({ pet_name: lastPet, type: "message", message: v });
     msgInput.value = "";
     renderCaptions();
     setStatus("메시지를 기억에 담았어요 💜");
@@ -396,7 +424,7 @@ function initAR(panel) {
   window.petpyAR = {
     activate: activate,
     deactivate: deactivate,
-    summonDataURL: function (d) { return summon(d, true); },
+    summonDataURL: function (d) { return summon(d, true, { source: "external", pet_name: lastPet }); },
     summonUrl: summonUrlOnly
   };
 }
