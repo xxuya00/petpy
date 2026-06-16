@@ -168,12 +168,18 @@
   // counter tick
   let c=1247;setInterval(()=>{if(Math.random()>.6){c++;document.getElementById('cnt').textContent=c.toLocaleString()}},3500);
 
-  // beta — 이메일/피드백을 SheetDB 'visitors' 탭에 실제 저장(관심 수요 데이터)
+  // 화면 하단 토스트 팝업(공용) — #toast 사용
+  function petpyToast(msg){
+    var t=document.getElementById('toast'); if(!t) return;
+    t.textContent=msg; t.classList.add('show');
+    clearTimeout(t._t); t._t=setTimeout(function(){ t.classList.remove('show'); }, 3200);
+  }
+  // beta — 이메일/피드백을 Apps Script 'beta' 탭에 실제 저장(관심 수요 데이터)
   function submitBeta(){
     const e=document.getElementById('email').value.trim();
     const fb=document.getElementById('feedback').value.trim();
     const msg=document.getElementById('betaMsg');
-    if(!e||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){msg.style.color='#c47a4c';msg.textContent='올바른 이메일 주소를 입력해 주세요.';return;}
+    if(!e||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)){msg.style.color='#c47a4c';msg.textContent='올바른 이메일 주소를 입력해 주세요.';petpyToast('이메일 주소를 다시 확인해 주세요 🙏');return;}
     // Apps Script 'beta' 탭에 저장 (PETPY_GAS 비어있으면 데모: 저장 생략) — fire-and-forget
     // ('visitors'는 이미 외부 방문자-분석 로깅이 쓰는 탭이라 petpy 전용 'beta' 탭 사용)
     // text/plain = 단순 요청이라 Apps Script CORS 프리플라이트 회피
@@ -183,8 +189,10 @@
         body:JSON.stringify({sheet:'beta',row:{email:e,message:fb,created_at:new Date().toISOString()}})}).catch(()=>{});
     }
     msg.style.color='#7E8E76';
-    msg.textContent=fb ? '신청 완료! 소중한 의견 감사해요. 가장 먼저 소식 전할게요 💛'
-                       : '신청 완료! 가장 먼저 소식을 전해드릴게요. 💛';
+    const done=fb ? '신청 완료! 소중한 의견 감사해요. 가장 먼저 소식 전할게요 💛'
+                  : '베타 신청 완료! 가장 먼저 소식을 전해드릴게요 💛';
+    msg.textContent=done;
+    petpyToast(done);
     document.getElementById('email').value='';
     document.getElementById('feedback').value='';
     c++;document.getElementById('cnt').textContent=c.toLocaleString();
