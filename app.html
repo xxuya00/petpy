@@ -150,6 +150,11 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
   </button>
 
+  <!-- 의견 보내기 플로팅 버튼(기록·소통 탭에서 노출 · 좌하단) -->
+  <button type="button" class="fab-fb" id="fbFab" aria-label="의견 보내기" title="의견 보내기">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/><path d="M8.5 10.5h7M8.5 13.5h4"/></svg>
+  </button>
+
   <!-- ============ 동네 인증 안내(베타: 전지역 통합) ============ -->
   <div class="modal-overlay" id="verifyModal" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-label="동네 인증 안내">
@@ -225,6 +230,19 @@
       <input type="text" id="petNameInput" class="modal-input" placeholder="예: 초코" maxlength="20" autocomplete="off">
       <div class="modal-note" id="petNote"></div>
       <button type="button" class="btn amber block" id="petSubmit" data-i18n="petSubmit">추가하기</button>
+    </div>
+  </div>
+
+  <!-- ============ 의견 보내기(피드백 · 구글시트 feedback 탭) ============ -->
+  <div class="modal-overlay" id="fbModal" aria-hidden="true">
+    <div class="modal modal-write" role="dialog" aria-modal="true" aria-label="의견 보내기">
+      <button type="button" class="modal-close" id="fbClose" aria-label="닫기">&times;</button>
+      <div class="modal-ic">💬</div>
+      <h3 data-i18n="fbTitle">펫피에 의견 보내기</h3>
+      <p data-i18n-html="fbDesc">불편한 점, 바라는 기능, 칭찬까지 무엇이든 좋아요.<br>보내주신 한마디가 펫피를 더 좋게 만들어요.</p>
+      <textarea id="fbText" class="modal-textarea" rows="4" maxlength="500" data-i18n-ph="fbPh" placeholder="자유롭게 의견을 들려주세요"></textarea>
+      <div class="modal-note" id="fbNote"></div>
+      <button type="button" class="btn amber block" id="fbSubmit" data-i18n="fbSubmit">의견 보내기</button>
     </div>
   </div>
 

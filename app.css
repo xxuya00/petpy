@@ -393,6 +393,17 @@ button{font-family:inherit}
 .fab-write:active{transform:scale(.93)}
 .fab-write svg{width:26px;height:26px}
 
+/* 의견 보내기 플로팅 버튼(좌하단 · 기록/소통 탭에서만 .show) */
+.fab-fb{position:absolute;left:18px;bottom:calc(82px + env(safe-area-inset-bottom));z-index:140;
+  width:50px;height:50px;border-radius:50%;border:none;cursor:pointer;color:#fff;
+  background:var(--gold);display:none;place-items:center;
+  box-shadow:0 12px 28px rgba(232,160,76,.5);transition:transform .2s,box-shadow .2s}
+.fab-fb.show{display:grid;animation:fabin .3s ease}
+.fab-fb:hover{transform:translateY(-2px) scale(1.05)}
+.fab-fb:active{transform:scale(.93)}
+.fab-fb svg{width:24px;height:24px}
+#fbModal .modal-textarea:focus{border-color:var(--gold)}
+
 /* 글쓰기 모달 */
 .btn.ghost{background:transparent;color:var(--ink-soft);border:1.5px solid rgba(58,50,43,.16)}
 .btn.ghost:hover{background:rgba(58,50,43,.04)}

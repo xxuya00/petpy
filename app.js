@@ -186,7 +186,9 @@
       arMsgPh: "추모 한마디를 남겨요", arMsgBtn: "남기기",
       communityH1: "우리동네 댕댕이", communityDesc: "동네를 인증하면 진짜 이웃들과 마음을 나눌 수 있어요.",
       regionSub: "인증하면 더 가까운 이웃을 만나요", verifyBtn: "우리 동네 인증하기",
-      petModalTitle: "우리 아이 등록", petModalDesc: "우리 아이의 이름을 입력해주세요", petSubmit: "추가하기"
+      petModalTitle: "우리 아이 등록", petModalDesc: "우리 아이의 이름을 입력해주세요", petSubmit: "추가하기",
+      fbTitle: "펫피에 의견 보내기", fbDesc: "불편한 점, 바라는 기능, 칭찬까지 무엇이든 좋아요.<br>보내주신 한마디가 펫피를 더 좋게 만들어요.",
+      fbPh: "자유롭게 의견을 들려주세요", fbSubmit: "의견 보내기", fbThanks: "소중한 의견 감사해요! 펫피가 잘 새겨둘게요 💛", fbEmpty: "의견을 입력해 주세요"
     },
     en: {
       recordTab: "Record", memoryTab: "Sanctuary", communityTab: "Community",
@@ -198,7 +200,9 @@
       arMsgPh: "Leave a word of remembrance", arMsgBtn: "Post",
       communityH1: "Neighborhood Pets", communityDesc: "Verify your area to share your heart with real neighbors.",
       regionSub: "Verify to meet closer neighbors", verifyBtn: "Verify My Area",
-      petModalTitle: "Register your pet", petModalDesc: "Please enter your pet's name", petSubmit: "Add"
+      petModalTitle: "Register your pet", petModalDesc: "Please enter your pet's name", petSubmit: "Add",
+      fbTitle: "Send us feedback", fbDesc: "Bugs, wishes, or kind words — anything helps.<br>Your note makes petpy better.",
+      fbPh: "Tell us what you think", fbSubmit: "Send feedback", fbThanks: "Thanks for your feedback! 💛", fbEmpty: "Please enter your feedback"
     },
     ja: {
       recordTab: "記録", memoryTab: "思い出", communityTab: "コミュニティ",
@@ -210,7 +214,9 @@
       arMsgPh: "追悼の一言を残す", arMsgBtn: "残す",
       communityH1: "ご近所のペット", communityDesc: "地域を認証すれば、本当のご近所さんと心を分かち合えます。",
       regionSub: "認証するともっと近いご近所さんに出会えます", verifyBtn: "地域を認証する",
-      petModalTitle: "ペットを登録", petModalDesc: "ペットの名前を入力してください", petSubmit: "追加"
+      petModalTitle: "ペットを登録", petModalDesc: "ペットの名前を入力してください", petSubmit: "追加",
+      fbTitle: "petpyへ意見を送る", fbDesc: "不便な点、欲しい機能、お褒めの言葉まで何でも歓迎です。<br>いただいた一言がpetpyをより良くします。",
+      fbPh: "ご自由にご意見をお聞かせください", fbSubmit: "意見を送る", fbThanks: "貴重なご意見ありがとうございます！💛", fbEmpty: "ご意見を入力してください"
     },
     zh: {
       recordTab: "记录", memoryTab: "回忆", communityTab: "社区",
@@ -222,7 +228,9 @@
       arMsgPh: "留下一句追思的话", arMsgBtn: "留言",
       communityH1: "邻里萌宠", communityDesc: "认证所在地区，即可与真实邻居分享心意。",
       regionSub: "认证后遇见更近的邻居", verifyBtn: "认证我的地区",
-      petModalTitle: "登记宠物", petModalDesc: "请输入宠物的名字", petSubmit: "添加"
+      petModalTitle: "登记宠物", petModalDesc: "请输入宠物的名字", petSubmit: "添加",
+      fbTitle: "向 petpy 提建议", fbDesc: "无论是问题、期待的功能还是赞美都欢迎。<br>你的留言会让 petpy 变得更好。",
+      fbPh: "随时告诉我们你的想法", fbSubmit: "发送意见", fbThanks: "感谢你的宝贵意见！💛", fbEmpty: "请输入您的意见"
     }
   };
   var LANG_KEY = "petpy_lang";
@@ -832,6 +840,57 @@
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && verifyModal.classList.contains("open")) vClose();
   });
+
+  // ---------- 앱 의견 보내기(피드백 · 구글시트 feedback 탭) ----------
+  // 어디서든 좌하단 💬 버튼 → 모달 → feedback 탭에 한 줄(user_id|message|created_at) 적재.
+  // 데모(PETPY_GAS 미설정)면 saveRow가 저장을 건너뛰지만, 감사 토스트는 동일하게 노출(일관 UX).
+  (function feedbackBox() {
+    var fbFab = document.getElementById("fbFab");
+    var fbModal = document.getElementById("fbModal");
+    if (!fbFab || !fbModal) return;
+    var fbText = document.getElementById("fbText");
+    var fbNote = document.getElementById("fbNote");
+    var fbSubmit = document.getElementById("fbSubmit");
+    var fbClose = document.getElementById("fbClose");
+
+    function openFb() {
+      fbText.value = "";
+      setNote(fbNote, "", true);
+      fbModal.classList.add("open");
+      fbModal.setAttribute("aria-hidden", "false");
+      setTimeout(function () { fbText.focus(); }, 60);
+    }
+    function closeFb() {
+      fbModal.classList.remove("open");
+      fbModal.setAttribute("aria-hidden", "true");
+    }
+
+    fbFab.addEventListener("click", openFb);
+    fbClose.addEventListener("click", closeFb);
+    fbModal.addEventListener("click", function (e) { if (e.target === fbModal) closeFb(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && fbModal.classList.contains("open")) closeFb();
+    });
+
+    fbSubmit.addEventListener("click", function () {
+      var msg = (fbText.value || "").trim();
+      if (!msg) { setNote(fbNote, T("fbEmpty"), false); fbText.focus(); return; }
+      var row = {
+        user_id: localStorage.getItem("petpy_user_id") || "익명",
+        message: msg,
+        created_at: window.PETPY_now()
+      };
+      if (window.PETPY && window.PETPY.saveRow) window.PETPY.saveRow("feedback", row);
+      closeFb();
+      showToast(T("fbThanks"));
+    });
+
+    // 기록·소통 탭에서만 노출(기억 탭=AR은 하단 컨트롤과 겹쳐 숨김)
+    function syncFbFab(tab) { fbFab.classList.toggle("show", tab === "record" || tab === "connect"); }
+    window.addEventListener("petpy:tab", function (e) { syncFbFab(e.detail && e.detail.tab); });
+    var act = document.querySelector(".tab.active");
+    syncFbFab(act ? act.getAttribute("data-tab") : "record");
+  })();
 })();
 
 // ============ 웹앱 방문 로깅 (랜딩과 같은 'visits' 탭 · landingUrl 이 /app.html 로 찍혀 구분) ============

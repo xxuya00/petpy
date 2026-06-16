@@ -24,6 +24,7 @@
  *   beta      : email | message | created_at        (랜딩 베타 신청 — petpy 전용 새 탭)
  *   visits    : landingUrl | referer | utm | device | ip | created_at   (랜딩 방문 로깅 — petpy 전용 새 탭)
  *   clicks    : feature | sid | created_at           (랜딩 기능별 '기대돼요' 클릭 — 가짜문 수요검증, petpy 전용 새 탭)
+ *   feedback  : user_id | message | created_at        (웹앱 내 '의견 보내기' — petpy 전용 새 탭)
  *   3d_demand : user_id | email | created_at
  *   ※ 'visitors'는 외부 방문자-분석 로깅이 쓰는 탭이라 건드리지 않고, 랜딩 신청은 'beta' 탭 사용.
  *
