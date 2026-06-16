@@ -186,7 +186,7 @@
     const GAS=(window.PETPY_GAS||'').replace(/\/+$/,'');
     if(GAS){
       fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body:JSON.stringify({sheet:'beta',row:{email:e,message:fb,created_at:new Date().toISOString()}})}).catch(()=>{});
+        body:JSON.stringify({sheet:'beta',row:{email:e,message:fb,created_at:window.PETPY_now()}})}).catch(()=>{});
     }
     msg.style.color='#7E8E76';
     const done=fb ? '신청 완료! 소중한 의견 감사해요. 가장 먼저 소식 전할게요 💛'
@@ -314,7 +314,7 @@
       if(!seen(f)){
         try{sessionStorage.setItem('petpy_click_'+f,'1');}catch(e){}
         if(GAS){ fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
-          body:JSON.stringify({sheet:'clicks',row:{feature:f,sid:sid(),created_at:new Date().toISOString()}})}).catch(function(){}); }
+          body:JSON.stringify({sheet:'clicks',row:{feature:f,sid:sid(),created_at:window.PETPY_now()}})}).catch(function(){}); }
       }
       markDone(b);
       toast('기대해 주셔서 감사해요! 베타에서 가장 먼저 알려드릴게요 💛');
@@ -336,7 +336,7 @@
     }
     function send(ip){
       var row={ landingUrl:location.href, referer:document.referrer||'(direct)', utm:utmStr(),
-                device:navigator.userAgent, ip:ip||'', created_at:new Date().toISOString() };
+                device:navigator.userAgent, ip:ip||'', created_at:window.PETPY_now() };
       fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
         body:JSON.stringify({sheet:'visits',row:row})}).catch(function(){});
     }

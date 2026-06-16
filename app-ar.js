@@ -352,7 +352,7 @@ function initAR(panel) {
     // SheetDB 'demand' 수요조사 저장(데모면 자동 생략) — fire-and-forget
     var uid = localStorage.getItem("petpy_user_id") || "";
     if (window.PETPY && window.PETPY.saveRow) {
-      window.PETPY.saveRow("3d_demand", { user_id: uid, email: v, created_at: new Date().toISOString() });
+      window.PETPY.saveRow("3d_demand", { user_id: uid, email: v, created_at: window.PETPY_now() });
     }
     email.value = "";
     mNote("신청 완료! 3D 베타가 열리면 가장 먼저 모실게요 ✦", true);

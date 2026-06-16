@@ -12,3 +12,11 @@ window.PETPY_API = "https://petpy.onrender.com";
 // 비우면("") localStorage 데모 모드 — 발표는 이 상태로도 동작.
 // 채우면 소통(community/comments)·기록(record)·랜딩폼(beta)·3D수요조사(3d_demand)가 구글시트에 실제 저장.
 window.PETPY_GAS = "https://script.google.com/macros/s/AKfycbzFOn4asiMS1vQNV-VZamW72YSszDAeYCZdYqnHnzoiX7wN0dFOrhZAYQCj0joZ6NjpaQ/exec";
+
+// created_at 등 모든 타임스탬프는 한국시간(KST, +09:00)으로 기록합니다.
+// new Date().toISOString()는 UTC('…Z')라 시트엔 9시간 이른 값으로 보입니다 — 대신 이걸 쓰세요.
+// 반환 예: "2026-06-16T14:30:00+09:00" — ISO 8601이라 Date.parse로 같은 시각이 그대로 복원됩니다.
+window.PETPY_now = function () {
+  var kst = new Date(Date.now() + 9 * 60 * 60 * 1000);   // 현재 시각을 +9h 이동
+  return kst.toISOString().replace(/\.\d{3}Z$/, "+09:00"); // UTC 표기를 KST 벽시계+오프셋으로
+};

@@ -344,7 +344,7 @@
     var petSubmit = document.getElementById("petSubmit");
 
     function uid() { return localStorage.getItem(KEY) || "보호자"; }
-    function nowISO() { return new Date().toISOString(); }
+    function nowISO() { return window.PETPY_now(); }
     function lsRead(k) { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch (e) { return []; } }
     function lsWrite(k, arr) { try { localStorage.setItem(k, JSON.stringify(arr)); } catch (e) {} }
     function tsOf(m) { var t = Date.parse(m.created_at); return isNaN(t) ? 0 : t; }
@@ -576,7 +576,7 @@
     var lastPreviewDataURL = null; // 미리보기 + 업로드 실패 폴백용 dataURL
 
     function uid() { return localStorage.getItem(KEY) || "보호자"; }
-    function nowISO() { return new Date().toISOString(); }
+    function nowISO() { return window.PETPY_now(); }
 
     // ----- localStorage (데모 + 오프라인 폴백 캐시) -----
     function lsRead(k) { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch (e) { return []; } }
@@ -851,7 +851,7 @@
   }
   function send(ip){
     var row={ landingUrl:location.href, referer:document.referrer||'(direct)', utm:utmStr(),
-              device:navigator.userAgent, ip:ip||'', created_at:new Date().toISOString() };
+              device:navigator.userAgent, ip:ip||'', created_at:window.PETPY_now() };
     fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
       body:JSON.stringify({sheet:'visits',row:row})}).catch(function(){});
   }
