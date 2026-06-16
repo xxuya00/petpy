@@ -833,3 +833,28 @@
     if (e.key === "Escape" && verifyModal.classList.contains("open")) vClose();
   });
 })();
+
+// ============ 웹앱 방문 로깅 (랜딩과 같은 'visits' 탭 · landingUrl 이 /app.html 로 찍혀 구분) ============
+// 목적: 랜딩→웹앱 전환(funnel). 랜딩(petpy.js)과 '독립된' 중복방지 키를 써서, 같은 세션에 랜딩→앱을
+//       이어서 와도 앱 방문이 따로 1회 적재된다. 새 탭/헤더 변경 불필요(visits 컬럼 그대로 사용).
+//   분석: visits 탭에서 landingUrl='https://petpy.netlify.app/' = 랜딩 방문(n),
+//         landingUrl 이 '/app.html' = 앱 방문(전환). 앱 행의 referer 가 랜딩이면 랜딩 경유 전환.
+(function logAppVisit(){
+  var GAS=(window.PETPY_GAS||'').replace(/\/+$/,'');
+  if(!GAS) return;                       // 데모 모드면 로깅 안 함
+  try{ if(sessionStorage.getItem('petpy_app_visit_logged')) return; sessionStorage.setItem('petpy_app_visit_logged','1'); }catch(e){}
+  function utmStr(){
+    try{ var p=new URLSearchParams(location.search),a=[];
+      ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(function(k){var v=p.get(k); if(v)a.push(k.replace('utm_','')+'='+v);});
+      return a.join('|');
+    }catch(e){ return ''; }
+  }
+  function send(ip){
+    var row={ landingUrl:location.href, referer:document.referrer||'(direct)', utm:utmStr(),
+              device:navigator.userAgent, ip:ip||'', created_at:new Date().toISOString() };
+    fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({sheet:'visits',row:row})}).catch(function(){});
+  }
+  fetch('https://api.ipify.org?format=json').then(function(r){return r.json();})
+    .then(function(j){ send(j&&j.ip); }, function(){ send(''); });
+})();
